@@ -327,7 +327,8 @@
                             <th id="thSelectHeader" class="p-4 text-center w-12 hidden">
                                 <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" class="w-4 h-4 text-blue-600 rounded bg-slate-900 border-slate-700 cursor-pointer">
                             </th>
-                            <th class="p-4 whitespace-nowrap text-right">رقم الوحدة (R1-2-12-A1)</th>
+                            <th class="p-4 whitespace-nowrap text-right">رقم الوحدة السكنية</th>
+                            
                             <th class="p-4 text-base text-blue-400">تفاصيل مالك الوحدة السكنية</th>
                             <th class="p-4 text-base text-emerald-400">تفاصيل مستأجر الوحدة السكنية وعقد الإيجار</th>
                             <th class="p-4 text-center whitespace-nowrap">الإجراءات</th>
@@ -662,18 +663,15 @@
                     <div>
                         <label class="text-xs text-slate-400 block mb-1">نوع الشقة *</label>
                         <select id="addApartmentType" required class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-xs text-white outline-none">
-                            <option value="A1">A1</option>
-                            <option value="A2">A2</option>
-                            <option value="B1">B1</option>
-                            <option value="B2">B2</option>
-                            <option value="C1">C1</option>
-                            <option value="C2">C2</option>
-                            <option value="S02">S02</option>
-                            <option value="S03">S03</option>
-                            <option value="S05">S05</option>
-                            <option value="S06">S06</option>
-                            <option value="S07">S07</option>
-                            <option value="S08">S08</option>
+                            <optgroup label="أنواع الشقق المعتمدة">
+                                <option value="P1">P1</option><option value="P2">P2</option><option value="P3">P3</option><option value="P4">P4</option>
+                                <option value="K01">K01</option><option value="K02">K02</option><option value="K03">K03</option><option value="K04">K04</option>
+                                <option value="J01">J01</option><option value="J02">J02</option><option value="J03">J03</option><option value="J04">J04</option><option value="J05">J05</option><option value="J06">J06</option>
+                                <option value="U01">U01</option><option value="U02">U02</option><option value="U03">U03</option><option value="U04">U04</option><option value="U05">U05</option><option value="U06">U06</option><option value="U07">U07</option><option value="U08">U08</option><option value="U09">U09</option><option value="U10">U10</option><option value="U11">U11</option><option value="U12">U12</option><option value="U13">U13</option><option value="U14">U14</option>
+                            </optgroup>
+                            <optgroup label="أنواع قديمة محفوظة للتوافق">
+                                <option value="A1">A1</option><option value="A2">A2</option><option value="B1">B1</option><option value="B2">B2</option><option value="C1">C1</option><option value="C2">C2</option><option value="S02">S02</option><option value="S03">S03</option><option value="S05">S05</option><option value="S06">S06</option><option value="S07">S07</option><option value="S08">S08</option>
+                            </optgroup>
                         </select>
                     </div>
                     <div>
@@ -1621,6 +1619,7 @@ db.ref('units').once('value', (snapshot) => {
             const optCanceledContract = document.getElementById('optCanceledContract');
 
             if (role === 'maintenance') {
+                document.getElementById('contractStatusFilterWrapper').style.display = '';
                 if(optActiveMaint) optActiveMaint.style.display = 'block';
                 if(optExpiredMaint) optExpiredMaint.style.display = 'block';
                 if(optExpiredContract) optExpiredContract.style.display = 'none';
@@ -1636,10 +1635,11 @@ db.ref('units').once('value', (snapshot) => {
                 if(optExpiredContract) optExpiredContract.style.display = 'block';
                 if(optCanceledContract) optCanceledContract.style.display = 'block';
 
-                document.getElementById('searchAuthWrapper').style.display = 'block';
-                document.getElementById('searchPhoneWrapper').style.display = 'block';
-                document.getElementById('searchCarWrapper').style.display = 'block';
-                document.getElementById('searchGridContainer').className = "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3";
+                document.getElementById('searchAuthWrapper').style.display = 'none';
+                document.getElementById('searchPhoneWrapper').style.display = 'none';
+                document.getElementById('searchCarWrapper').style.display = 'none';
+                document.getElementById('contractStatusFilterWrapper').style.display = 'none';
+                document.getElementById('searchGridContainer').className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
             } else {
                 if(optActiveMaint) optActiveMaint.style.display = 'block';
                 if(optExpiredMaint) optExpiredMaint.style.display = 'block';
@@ -1651,6 +1651,7 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('searchCarWrapper').style.display = 'block';
 
                 const statusFilterWrapper = document.getElementById('contractStatusFilterWrapper');
+                statusFilterWrapper.style.display = '';
                 const searchGrid = document.getElementById('searchGridContainer');
                 if (role === 'viewer') {
                     statusFilterWrapper.classList.add('hidden');
@@ -1786,7 +1787,7 @@ db.ref('units').once('value', (snapshot) => {
                 residents.forEach(r => {
                     html += `<div class="bg-slate-900/80 p-2 rounded-lg border border-slate-700/70 text-xs text-slate-200">
                         <b>${highlightText(r.name, queries.qName)}</b> (${esc(r.relation || 'قريب')}) 
-                        ${r.phone ? `| هاتف: <span class="font-mono text-emerald-400 font-bold">${highlightText(r.phone, queries.qPhone)}</span>` : ''}
+                        ${r.phone ? `| هاتف: <span class="font-mono text-emerald-400 text-sm font-bold">${highlightText(r.phone, queries.qPhone)}</span>` : ''}
                     </div>`;
                 });
                 html += `</div></div>`;
@@ -1810,6 +1811,7 @@ db.ref('units').once('value', (snapshot) => {
                     html += `<div class="bg-slate-900/90 p-2.5 rounded-lg border border-amber-500/40 text-xs text-slate-200 space-y-1">
                         <div class="flex items-start justify-between gap-2"><div><i class="fa-solid fa-user-shield text-amber-400 ml-1"></i><b>المخول:</b> ${highlightText(auth.name, queries.qAuth)} <span class="text-slate-400">(${highlightText(auth.type || 'عام', queries.qAuth)})</span></div>${deleteBtn}</div>
                         ${auth.startDate || auth.expiryDate ? `<div class="text-[11px] text-slate-300"><b>الفترة:</b> من <span class="text-sky-300">${highlightText(sDate, queries.qAuth)}</span> إلى <span class="text-amber-300">${highlightText(eDate, queries.qAuth)}</span></div>` : ''}
+                        ${(auth.carType || auth.vehicleType || auth.carColor || auth.vehicleColor || auth.carNum || auth.carNumber || auth.vehicleNumber) ? `<div class="text-[11px] text-blue-200"><i class="fa-solid fa-car ml-1"></i><b>السيارة:</b> ${esc(auth.carType || auth.vehicleType || '')} ${esc(auth.carColor || auth.vehicleColor || '')} ${esc(auth.carNum || auth.carNumber || auth.vehicleNumber || '')}</div>` : ''}
                     </div>`;
                 });
                 html += `</div></div>`;
@@ -1891,7 +1893,7 @@ db.ref('units').once('value', (snapshot) => {
                 let ownerSectionContent = `
                     <div class="flex flex-col gap-1">
                         <span class="text-white font-extrabold text-base"><i class="fa-solid fa-user-tie text-blue-400 ml-1"></i>${highlightText(item.owner, queries.qName)} ${item.ownerIsResident ? '<span class="text-xs text-sky-300 font-normal">[مقيم]</span>' : ''}</span>
-                        ${ownerPhonesStr ? `<div class="text-amber-400 font-mono text-xs font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(ownerPhonesStr, queries.qPhone)}</div>` : ''}
+                        ${ownerPhonesStr ? `<div class="text-amber-400 font-mono text-sm font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(ownerPhonesStr, queries.qPhone)}</div>` : ''}
                         ${maintenanceInfoHtml}
                         ${ownerDetailsHtml}
                     </div>
@@ -1945,7 +1947,7 @@ db.ref('units').once('value', (snapshot) => {
                     tenantContent = `
                         <div class="flex flex-col gap-1">
                             <span class="text-white font-extrabold text-base"><i class="fa-solid fa-user text-emerald-400 ml-1"></i>${highlightText(item.tenant, queries.qName)} ${item.tenantIsResident ? '<span class="text-xs text-teal-300 font-normal">[مقيم]</span>' : ''}</span>
-                            ${tenantPhonesStr ? `<div class="text-emerald-300 font-mono text-xs font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(tenantPhonesStr, queries.qPhone)}</div>` : ''}
+                            ${tenantPhonesStr ? `<div class="text-emerald-300 font-mono text-sm font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(tenantPhonesStr, queries.qPhone)}</div>` : ''}
                             ${leaseInfo}
                             ${tenantDetailsHtml}
                         </div>
@@ -2144,7 +2146,7 @@ db.ref('units').once('value', (snapshot) => {
                     type: row.querySelector('.car-type').value, color: row.querySelector('.car-color').value, number: row.querySelector('.car-num').value
                 })).filter(c => c.type),
                 ownerAuth: Array.from(document.querySelectorAll('#ownerAuthContainer > div')).map(row => ({
-                    name: row.querySelector('.auth-name').value, type: row.querySelector('.auth-type').value, startDate: row.querySelector('.auth-start-date').value, expiryDate: row.querySelector('.auth-expiry-date').value
+                    name: row.querySelector('.auth-name').value, type: row.querySelector('.auth-type').value, startDate: row.querySelector('.auth-start-date').value, expiryDate: row.querySelector('.auth-expiry-date').value, carType: row.querySelector('.auth-car-type').value, carColor: row.querySelector('.auth-car-color').value, carNum: row.querySelector('.auth-car-num').value
                 })).filter(a => a.name),
                 tenant: document.getElementById('addTenant').value.trim(),
                 tenantIsResident: document.getElementById('addTenantIsResident').checked,
@@ -2162,7 +2164,7 @@ db.ref('units').once('value', (snapshot) => {
                     type: row.querySelector('.car-type').value, color: row.querySelector('.car-color').value, number: row.querySelector('.car-num').value
                 })).filter(c => c.type),
                 tenantAuth: Array.from(document.querySelectorAll('#tenantAuthContainer > div')).map(row => ({
-                    name: row.querySelector('.auth-name').value, type: row.querySelector('.auth-type').value, startDate: row.querySelector('.auth-start-date').value, expiryDate: row.querySelector('.auth-expiry-date').value
+                    name: row.querySelector('.auth-name').value, type: row.querySelector('.auth-type').value, startDate: row.querySelector('.auth-start-date').value, expiryDate: row.querySelector('.auth-expiry-date').value, carType: row.querySelector('.auth-car-type').value, carColor: row.querySelector('.auth-car-color').value, carNum: row.querySelector('.auth-car-num').value
                 })).filter(a => a.name),
                 archiveCanceledTenants: existingArchive,
                 notes: document.getElementById('addNotes').value || "لا توجد ملاحظات."
@@ -2250,6 +2252,11 @@ db.ref('units').once('value', (snapshot) => {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
                     <input type="date" value="${esc(data.startDate)}" class="auth-start-date w-full bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
                     <input type="date" value="${esc(data.expiryDate)}" class="auth-expiry-date w-full bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" placeholder="نوع السيارة" value="${esc(data.carType || data.vehicleType || '')}" class="auth-car-type bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                    <input type="text" placeholder="لون السيارة" value="${esc(data.carColor || data.vehicleColor || '')}" class="auth-car-color bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                    <input type="text" placeholder="رقم السيارة / اللوحة" value="${esc(data.carNum || data.carNumber || data.vehicleNumber || '')}" class="auth-car-num bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
                 </div>
             `;
             container.appendChild(div);
