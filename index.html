@@ -1477,6 +1477,7 @@ db.ref('units').once('value', (snapshot) => {
                 totals.tenant += parseFinanceNumber(u.tenantCommission);
                 totals.deposit += parseFinanceNumber(u.tenantDeposit);
                 (u.financeArchive || []).forEach(a => {
+                    totals.owner += parseFinanceNumber(a.ownerCommission);
                     totals.tenant += parseFinanceNumber(a.tenantCommission);
                     totals.deposit += parseFinanceNumber(a.tenantDeposit);
                 });
@@ -1570,12 +1571,12 @@ db.ref('units').once('value', (snapshot) => {
                 if (item.ownerIsResident) totalResidents += 1;
                 
                 if (item.tenant && item.tenant.trim()) {
-                    totalTenants += 1;
                     if (item.tenantIsResident) totalResidents += 1;
 
                     if (item.isCanceled) {
                         canceledContractsCount += 1;
                     } else {
+                        totalTenants += 1;
                         activeContractsCount += 1;
                         const t = String(item.apartmentType || 'A1').trim().toUpperCase();
                         const group = t.startsWith('A') ? 'A' : t.startsWith('B') ? 'B' : t.startsWith('C') ? 'C' : t.startsWith('S') ? 'S' : null;
@@ -1589,7 +1590,6 @@ db.ref('units').once('value', (snapshot) => {
 
                 if (item.archiveCanceledTenants && item.archiveCanceledTenants.length > 0) {
                     canceledContractsCount += item.archiveCanceledTenants.length;
-                    totalTenants += item.archiveCanceledTenants.length;
                 }
 
                 // يُحسب المالك/المستأجر المقيم كشخص واحد فقط؛ لا تُضاف أسماء أفراد العائلة إلى هذا المؤشر.
@@ -2212,12 +2212,21 @@ db.ref('units').once('value', (snapshot) => {
                         if (!item.archiveCanceledTenants) item.archiveCanceledTenants = [];
                         item.archiveCanceledTenants.push(archivedRecord);
                         if (!item.financeArchive) item.financeArchive = [];
-                        item.financeArchive.push({ tenant: archivedRecord.tenant, tenantCommission: archivedRecord.tenantCommission, tenantDeposit: archivedRecord.tenantDeposit, tenantDepositLabel: archivedRecord.tenantDeposit, archiveDate: archivedRecord.archiveDate });
+                        item.financeArchive.push({
+                            tenant: archivedRecord.tenant,
+                            ownerCommission: archivedRecord.ownerCommission,
+                            tenantCommission: archivedRecord.tenantCommission,
+                            tenantDeposit: archivedRecord.tenantDeposit,
+                            tenantDepositLabel: archivedRecord.tenantDeposit,
+                            archiveDate: archivedRecord.archiveDate
+                        });
+                        item.ownerCommission = '';
                         item.tenantCommission = '';
                         item.tenantDeposit = '';
                     }
                 }
 
+                document.getElementById('addOwnerCommission').value = '';
                 document.getElementById('addTenant').value = '';
                 document.getElementById('addContractNo').value = '';
                 document.getElementById('addLeaseStart').value = '';
@@ -2226,7 +2235,7 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('addRentUSD').value = '';
                 document.getElementById('addTenantCommission').value = '';
                 document.getElementById('addTenantDeposit').value = '';
-                alert("تمت أرشفة العقد بنجاح، وتم الاحتفاظ بعمولة المستأجر والتأمينات ضمن سجل المبالغ المؤرشفة.");
+                alert("تمت أرشفة العقد بنجاح، وتم تصفير عمولة المالك وعمولة المستأجر والتأمينات مع الاحتفاظ بجميع المبالغ ضمن الإجماليات المؤرشفة.");
             }
         }
 
