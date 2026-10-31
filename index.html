@@ -1439,12 +1439,13 @@ db.ref('units').once('value', (snapshot) => {
                 if (item.ownerIsResident) totalResidents += 1;
                 
                 if (item.tenant && item.tenant.trim()) {
-                    totalTenants += 1;
                     if (item.tenantIsResident) totalResidents += 1;
 
                     if (item.isCanceled) {
                         canceledContractsCount += 1;
                     } else {
+                        // إجمالي المستأجرين يشمل فقط خانات المستأجرين ذات العقود غير المفسوخة.
+                        totalTenants += 1;
                         activeContractsCount += 1;
                         const t = String(item.apartmentType || 'A1').trim().toUpperCase();
                         const group = t.startsWith('A') ? 'A' : t.startsWith('B') ? 'B' : t.startsWith('C') ? 'C' : t.startsWith('S') ? 'S' : null;
@@ -1457,8 +1458,8 @@ db.ref('units').once('value', (snapshot) => {
                 }
 
                 if (item.archiveCanceledTenants && item.archiveCanceledTenants.length > 0) {
+                    // المؤرشفون بسبب فسخ العقد يدخلون في إحصائية العقود المفسوخة فقط.
                     canceledContractsCount += item.archiveCanceledTenants.length;
-                    totalTenants += item.archiveCanceledTenants.length;
                 }
 
                 // يُحسب المالك/المستأجر المقيم كشخص واحد فقط؛ لا تُضاف أسماء أفراد العائلة إلى هذا المؤشر.
