@@ -1638,7 +1638,7 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('searchAuthWrapper').style.display = 'none';
                 document.getElementById('searchPhoneWrapper').style.display = 'none';
                 document.getElementById('searchCarWrapper').style.display = 'none';
-                document.getElementById('contractStatusFilterWrapper').style.display = 'none';
+                document.getElementById('contractStatusFilterWrapper').style.display = '';
                 document.getElementById('searchGridContainer').className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
             } else {
                 if(optActiveMaint) optActiveMaint.style.display = 'block';
@@ -1857,6 +1857,15 @@ db.ref('units').once('value', (snapshot) => {
 
         setInterval(removeExpiredAuthorizations, 60000);
 
+        function saveSecuritySequence(unitId, value) {
+            if (currentRole !== 'admin') return;
+            const item = unitsData.find(u => Number(u.id) === Number(unitId));
+            if (!item) return;
+            item.securitySequence = String(value || '').trim();
+            saveToStorage();
+            filterData();
+        }
+
         function renderData(data, queries = {}) {
             const tbody = document.getElementById('dataTable');
             tbody.innerHTML = '';
@@ -1976,8 +1985,21 @@ db.ref('units').once('value', (snapshot) => {
                     <tr class="hover:bg-slate-800/40 transition">
                         ${checkboxTdHtml}
                         <td class="p-4 whitespace-nowrap align-top">
-                            <div dir="ltr" class="inline-block bg-slate-900/90 text-emerald-300 px-4 py-2.5 rounded-xl border-2 border-emerald-500/40 font-mono text-xl font-black tracking-wider shadow-inner">
-                                ${highlightText(unitStr, queries.qUnit)}
+                            <div class="flex flex-wrap items-center gap-2">
+                                <div dir="ltr" class="inline-block bg-slate-900/90 text-emerald-300 px-4 py-2.5 rounded-xl border-2 border-emerald-500/40 font-mono text-xl font-black tracking-wider shadow-inner">
+                                    ${highlightText(unitStr, queries.qUnit)}
+                                </div>
+                                ${(currentRole === 'admin' || currentRole === 'viewer') ? `
+                                    <div class="flex flex-wrap items-center gap-1.5 bg-slate-900/70 border border-amber-500/30 rounded-lg px-2 py-1.5">
+                                        <span class="text-[11px] text-amber-300 font-extrabold">التسلسل الأمني</span>
+                                        ${currentRole === 'admin' ? `
+                                            <input id="security-seq-${Number(item.id)}" type="text" value="${esc(item.securitySequence || '')}" placeholder="أدخل التسلسل" class="w-24 bg-slate-800 border border-slate-600 rounded px-2 py-1 text-xs text-white text-center font-bold outline-none focus:border-amber-400">
+                                            <button type="button" onclick="saveSecuritySequence(${Number(item.id)}, document.getElementById('security-seq-${Number(item.id)}').value)" class="bg-amber-600 hover:bg-amber-500 text-white rounded px-2 py-1 text-[10px] font-bold">حفظ</button>
+                                        ` : `
+                                            <span class="text-sm text-white font-black font-mono">${item.securitySequence ? esc(item.securitySequence) : '—'}</span>
+                                        `}
+                                    </div>
+                                ` : ''}
                             </div>
                         </td>
                         <td class="p-4 text-base align-top">${ownerSectionContent}</td>
