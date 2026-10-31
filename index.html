@@ -251,6 +251,29 @@
                         </div>
                         <div class="bg-orange-500/10 p-1.5 rounded-lg text-orange-300 text-xs"><i class="fa-solid fa-calendar-clock"></i></div>
                     </div>
+        <!-- Financial totals are part of the same top statistics grid and use editable values -->
+        <section id="rentalFinanceSummary" class="hidden contents">
+            <label class="glass-panel px-3 py-2.5 rounded-xl border border-blue-500/20 flex flex-col items-start gap-1 min-w-0">
+                <span class="text-[11px] font-extrabold text-blue-300 leading-tight">إجمالي عمولات المالكين</span>
+                <input id="financeOwnerTotal" type="text" inputmode="numeric" oninput="formatCurrencyInput(this)" class="w-full min-w-0 max-w-full bg-transparent border-0 p-0 text-sm lg:text-base font-black text-white text-left tabular-nums focus:outline-none" value="0" aria-label="تعديل إجمالي عمولات المالكين">
+            </label>
+            <label class="glass-panel px-3 py-2.5 rounded-xl border border-emerald-500/20 flex flex-col items-start gap-1 min-w-0">
+                <span class="text-[11px] font-extrabold text-emerald-300 leading-tight">إجمالي عمولات المستأجرين</span>
+                <input id="financeTenantTotal" type="text" inputmode="numeric" oninput="formatCurrencyInput(this)" class="w-full min-w-0 max-w-full bg-transparent border-0 p-0 text-sm lg:text-base font-black text-white text-left tabular-nums focus:outline-none" value="0" aria-label="تعديل إجمالي عمولات المستأجرين">
+            </label>
+            <label class="glass-panel px-3 py-2.5 rounded-xl border border-indigo-500/20 flex flex-col items-start gap-1 min-w-0">
+                <span class="text-[11px] font-extrabold text-indigo-300 leading-tight">إجمالي العمولات للطرفين</span>
+                <input id="financeAllCommissionsTotal" type="text" inputmode="numeric" oninput="formatCurrencyInput(this)" class="w-full min-w-0 max-w-full bg-transparent border-0 p-0 text-sm lg:text-base font-black text-white text-left tabular-nums focus:outline-none" value="0" aria-label="تعديل إجمالي العمولات للطرفين">
+            </label>
+            <label class="glass-panel px-3 py-2.5 rounded-xl border border-amber-500/20 flex flex-col items-start gap-1 min-w-0">
+                <span class="text-[11px] font-extrabold text-amber-300 leading-tight">إجمالي التأمينات المستلمة</span>
+                <input id="financeDepositTotal" type="text" inputmode="numeric" oninput="formatCurrencyInput(this)" class="w-full min-w-0 max-w-full bg-transparent border-0 p-0 text-sm lg:text-base font-black text-white text-left tabular-nums focus:outline-none" value="0" aria-label="تعديل إجمالي التأمينات المستلمة">
+            </label>
+            <div class="col-span-full flex flex-wrap items-center justify-between gap-2 px-1">
+                <p id="rentalFinancePermissionNote" class="text-[10px] text-slate-400">يمكن للمدير تعديل الإجماليات وحفظها.</p>
+                <button id="saveRentalFinanceTotalsBtn" type="button" onclick="saveRentalFinanceTotals()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1.5 rounded-lg text-[11px] font-bold"><i class="fa-solid fa-floppy-disk ml-1"></i> حفظ الإجماليات</button>
+            </div>
+        </section>
                 </div>
             </div>
 
@@ -708,6 +731,9 @@
                         <input type="text" id="addOwnerPhone3" placeholder="هاتف 3" class="bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                     </div>
 
+                    <div id="ownerCommissionFields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 bg-blue-950/20 p-3 rounded-lg border border-blue-500/20">
+                        <div><label class="text-xs text-blue-300 block mb-1">عمولة المالك (د.ع)</label><input type="text" id="addOwnerCommission" oninput="formatCurrencyInput(this)" placeholder="مبلغ عمولة المالك" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
+                    </div>
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-xs text-slate-400 font-semibold">الساكنون مع المالك</label>
@@ -781,6 +807,10 @@
                         </div>
                     </div>
 
+                    <div id="tenantFinanceFields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/20">
+                        <div><label class="text-xs text-emerald-300 block mb-1">عمولة المستأجر (د.ع)</label><input type="text" id="addTenantCommission" oninput="formatCurrencyInput(this)" placeholder="مبلغ عمولة المستأجر" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
+                        <div><label class="text-xs text-amber-300 block mb-1">التأمينات المستلمة من المستأجر (د.ع)</label><input type="text" id="addTenantDeposit" placeholder="مبلغ التأمينات أو اكتب تعهد في الملاحظات" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
+                    </div>
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label class="text-xs text-slate-400 font-semibold">الساكنون مع المستأجر</label>
@@ -1003,10 +1033,29 @@
             return merged;
         }
 
+        // Imported financial values from the user's workbook, matched by building|floor|apartment.
+        const RENTAL_FINANCE_IMPORT_V1 = {"R2|21|124":{"ownerCommission":"875000","tenantCommission":"875000","tenantDeposit":"1000000"},"R2|16|92":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|24|140":{"ownerCommission":"0","tenantCommission":"0","tenantDeposit":"0"},"R1|9|52":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|9|49":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|12|70":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|22|129":{"ownerCommission":"625000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|17|102":{"ownerCommission":"0","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|10|55":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"0"},"R3|7|38":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|23|135":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|18|105":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|24|137":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|2|7":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|21|130":{"ownerCommission":"250000","tenantCommission":"750000","tenantDeposit":"0"},"R3|10|56":{"ownerCommission":"0","tenantCommission":"750000","tenantDeposit":"0"},"R2|2|9":{"ownerCommission":"0","tenantCommission":"0","tenantDeposit":"0"},"R2|22|128":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R1|6|34":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|22|130":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|22|129":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"0"},"R3|14|84":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R3|12|72":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|6|42":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|10|60":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|17|103":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|7|43":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|17|96":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|13|77":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|14|83":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|14|82":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|8|42":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|19|115":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|11|67":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|15|90":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|13|73":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|7|39":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|6|36":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|10|58":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"0"},"R1|11|67":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"750000"},"R3|20|118":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|17|95":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|15|88":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R3|4|21":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|11|64":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|3|16":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|12|69":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|11|68":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|9|54":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|15|89":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|12|77":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|5|29":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|20|115":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|7|47":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|18|109":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"0"},"R2|24|141":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|16|101":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|13|84":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|5|28":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|5|25":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|14|82":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R1|17|99":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|23|139":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|5|36":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|16|97":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|1|7":{"ownerCommission":"700000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|20|118":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|21|127":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"0"},"R4|12|78":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|14|83":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|24|142":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|12|73":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|20|119":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R4|4|30":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|5|27":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|2|14":{"ownerCommission":"750000","tenantCommission":"400000","tenantDeposit":"1000000"},"R3|1|6":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|8|45":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|24|150":{"ownerCommission":"375000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|23|136":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|3|18":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|24|147":{"ownerCommission":"750000","tenantCommission":"1000000","tenantDeposit":"1500000"},"R4|G|1":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|7|42":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|20|114":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|22|138":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|14|77":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|20|126":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|2|13":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1750000"},"R2|16|91":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|15|94":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|24|139":{"ownerCommission":"750000","tenantCommission":"1000000","tenantDeposit":"2000000"},"R1|18|105":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R4|13|79":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|22|133":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|18|104":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|14|80":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|21|122":{"ownerCommission":"900000","tenantCommission":"900000","tenantDeposit":"1500000"},"R2|17|97":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|4|28":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|21|119":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"2000000"},"R1|G|3":{"ownerCommission":"0","tenantCommission":"0","tenantDeposit":"0"},"R3|8|47":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|3|19":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R1|2|10":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|18|106":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|22|127":{"ownerCommission":"750000","tenantCommission":"0","tenantDeposit":"0"},"R3|15|87":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|8|47":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|20|120":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|6|39":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|20|113":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"500000"},"R4|1|9":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|16|96":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|23|133":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|19|114":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|19|116":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|19|110":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R2|8|43":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|10|61":{"ownerCommission":"375000","tenantCommission":"750000","tenantDeposit":"1000000"},"R1|3|19":{"ownerCommission":"750000","tenantCommission":"750000","tenantDeposit":"1000000"},"R4|2|15":{"ownerCommission":"2002000","tenantCommission":"2002000","tenantDeposit":"2000000"},"R3|21|127":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|14|90":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|14|78":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|5|29":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|15|92":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"0"},"R4|16|102":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|6|38":{"ownerCommission":"750000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R1|18|107":{"ownerCommission":"750000","tenantCommission":"1150000","tenantDeposit":"1000000"},"R3|13|76":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|21|131":{"ownerCommission":"2156000","tenantCommission":"2156000","tenantDeposit":"2000000"},"R1|9|50":{"ownerCommission":"1250000","tenantCommission":"1150000","tenantDeposit":"1000000"},"R1|10|56":{"ownerCommission":"1250000","tenantCommission":"1150000","tenantDeposit":"1000000"},"R2|8|46":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|7|45":{"ownerCommission":"1950000","tenantCommission":"1836000","tenantDeposit":"2000000"},"R1|2|13":{"ownerCommission":"0","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|3|16":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|21|127":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|4|27":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|17|104":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|19|115":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R1|3|14":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|16|89":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|10|54":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R1|11|63":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|11|62":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"0"},"R3|G|1":{"ownerCommission":"0","tenantCommission":"3080000","tenantDeposit":"2000000"},"R2|16|94":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|9|60":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|11|63":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|9|51":{"ownerCommission":"1350000","tenantCommission":"1000000","tenantDeposit":"0"},"R3|10|59":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|11|60":{"ownerCommission":"750000","tenantCommission":"1500000","tenantDeposit":"1000000"},"R2|3|15":{"ownerCommission":"0","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|9|48":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|3|21":{"ownerCommission":"2000000","tenantCommission":"2000000","tenantDeposit":"2000000"},"R4|14|85":{"ownerCommission":"1250000","tenantCommission":"0","tenantDeposit":"0"},"R1|7|43":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R1|16|92":{"ownerCommission":"1250000","tenantCommission":"1500000","tenantDeposit":"1000000"},"R4|18|109":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|11|66":{"ownerCommission":"1383000","tenantCommission":"1383000","tenantDeposit":"1000000"},"R1|14|81":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|12|67":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"0"},"R3|8|44":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R1|20|121":{"ownerCommission":"750000","tenantCommission":"1100000","tenantDeposit":"0"},"R2|20|117":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|14|86":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"تعهد"},"R4|18|110":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|4|23":{"ownerCommission":"750000","tenantCommission":"0","tenantDeposit":"0"},"R1|15|87":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|9|50":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|19|115":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R1|22|128":{"ownerCommission":"1000000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|9|51":{"ownerCommission":"1250000","tenantCommission":"750000","tenantDeposit":"تعهد"},"R4|14|89":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"تعهد"},"R4|15|96":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|6|34":{"ownerCommission":"1650000","tenantCommission":"1650000","tenantDeposit":"2000000"},"R1|1|6":{"ownerCommission":"1800000","tenantCommission":"1500000","tenantDeposit":"1500000"},"R1|23|136":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|11|59":{"ownerCommission":"1250000","tenantCommission":"1500000","tenantDeposit":"1000000"},"R1|19|111":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|13|76":{"ownerCommission":"1000000","tenantCommission":"0","tenantDeposit":"تعهد"},"R2|13|71":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|9|59":{"ownerCommission":"2000000","tenantCommission":"2000000","tenantDeposit":"تعهد"},"R4|4|29":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R1|4|25":{"ownerCommission":"750000","tenantCommission":"1000000","tenantDeposit":"0"},"R4|9|58":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|5|31":{"ownerCommission":"1250000","tenantCommission":"750000","tenantDeposit":"1000000"},"R3|5|30":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|23|141":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R1|16|93":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R3|11|64":{"ownerCommission":"0","tenantCommission":"1000000","tenantDeposit":"1000000"},"R3|5|26":{"ownerCommission":"1250000","tenantCommission":"1000000","tenantDeposit":"تعهد"},"R1|9|51":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|20|121":{"ownerCommission":"0","tenantCommission":"0","tenantDeposit":"0"},"R4|13|83":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|7|37":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R1|19|112":{"ownerCommission":"1368000","tenantCommission":"1860000","tenantDeposit":"2000000"},"R1|13|76":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|4|19":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R4|24|149":{"ownerCommission":"1000000","tenantCommission":"2000000","tenantDeposit":"2000000"},"R3|6|36":{"ownerCommission":"1100000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|7|48":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|9|50":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R1|8|44":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"500000"},"R3|2|8":{"ownerCommission":"1250000","tenantCommission":"500000","tenantDeposit":"تعهد"},"R3|14|81":{"ownerCommission":"1000000","tenantCommission":"1000000","tenantDeposit":"1000000"},"R2|10|57":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R2|13|75":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"},"R4|7|43":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1250000"},"R1|8|46":{"ownerCommission":"0","tenantCommission":"1000000","tenantDeposit":"1000000"},"R1|3|18":{"ownerCommission":"2000000","tenantCommission":"2000000","tenantDeposit":"2000000"},"R4|22|134":{"ownerCommission":"1250000","tenantCommission":"1250000","tenantDeposit":"1000000"}};
+        function applyRentalFinanceImport(data) {
+            let changed = false;
+            (data || []).forEach(unit => {
+                const key = `${String(unit.building || '').trim().toUpperCase()}|${String(unit.floor || '').trim().toUpperCase()}|${String(unit.apartment || '').trim()}`;
+                const imported = RENTAL_FINANCE_IMPORT_V1[key];
+                if (!imported || Number(unit.financeImportVersion || 0) >= 1) return;
+                if (Object.prototype.hasOwnProperty.call(imported, 'ownerCommission')) unit.ownerCommission = imported.ownerCommission;
+                if (Object.prototype.hasOwnProperty.call(imported, 'tenantCommission')) unit.tenantCommission = imported.tenantCommission;
+                if (Object.prototype.hasOwnProperty.call(imported, 'tenantDeposit')) unit.tenantDeposit = imported.tenantDeposit;
+                unit.financeImportVersion = 1;
+                changed = true;
+            });
+            return changed;
+        }
+
         let localCache = localStorage.getItem('royal_units_cache');
         if (localCache) {
             try {
                 unitsData = applyRoyalApartmentMap(JSON.parse(localCache));
+                applyRentalFinanceImport(unitsData);
+                localStorage.setItem('royal_units_cache', JSON.stringify(unitsData));
                 sortUnitsData();
                 updateGlobalStatistics();
             } catch(e) {}
@@ -1064,15 +1113,21 @@ db.ref('units').once('value', (snapshot) => {
             if (data) {
                 const loadedUnits = Array.isArray(data) ? data : Object.values(data);
                 unitsData = applyRoyalApartmentMap(loadedUnits);
+                const financeImportApplied = applyRentalFinanceImport(unitsData);
                 sortUnitsData();
                 localStorage.setItem('royal_units_cache', JSON.stringify(unitsData));
-                if (unitsData.length !== loadedUnits.length || unitsData.some((u, i) => { const old = loadedUnits.find(x => String(x.building||'').toUpperCase() === String(u.building||'').toUpperCase() && String(x.apartment||'') === String(u.apartment||'')); return old && (old.apartmentType !== u.apartmentType || String(old.floor) !== String(u.floor)); })) db.ref('units').set(unitsData);
+                if (financeImportApplied || unitsData.length !== loadedUnits.length || unitsData.some((u, i) => { const old = loadedUnits.find(x => String(x.building||'').toUpperCase() === String(u.building||'').toUpperCase() && String(x.apartment||'') === String(u.apartment||'')); return old && (old.apartmentType !== u.apartmentType || String(old.floor) !== String(u.floor)); })) db.ref('units').set(unitsData);
             } else {
                 if (!unitsData.length) unitsData = applyRoyalApartmentMap(defaultData);
                 else unitsData = applyRoyalApartmentMap(unitsData);
+                applyRentalFinanceImport(unitsData);
                 sortUnitsData();
                 localStorage.setItem('royal_units_cache', JSON.stringify(unitsData));
                 db.ref('units').set(unitsData);
+            }
+            if (rentalFinanceTotals && !rentalFinanceTotals.manuallyEdited) {
+                rentalFinanceTotals = calculateRentalFinanceTotals();
+                renderRentalFinanceTotals();
             }
             removeExpiredAuthorizations();
             applyHandoverDatePatchV1();
@@ -1410,6 +1465,82 @@ db.ref('units').once('value', (snapshot) => {
             db.ref('units').set(unitsData);
         }
 
+        let rentalFinanceTotals = null;
+        function canViewRentalFinance() { return currentRole === 'admin' || currentRole === 'services'; }
+        function canEditRentalFinance() { return currentRole === 'admin' || currentUserKey === 'admin'; }
+        function parseFinanceNumber(v) { return Number(String(v ?? '').replace(/[^0-9.-]/g, '')) || 0; }
+        function displayFinanceAmount(v) { const raw = String(v ?? '').trim(); if (!raw) return '—'; const n = parseFinanceNumber(raw); return n ? n.toLocaleString('en-US') + ' د.ع' : raw; }
+        function calculateRentalFinanceTotals() {
+            const totals = { owner: 0, tenant: 0, deposit: 0 };
+            (unitsData || []).forEach(u => {
+                totals.owner += parseFinanceNumber(u.ownerCommission);
+                totals.tenant += parseFinanceNumber(u.tenantCommission);
+                totals.deposit += parseFinanceNumber(u.tenantDeposit);
+                (u.financeArchive || []).forEach(a => {
+                    totals.tenant += parseFinanceNumber(a.tenantCommission);
+                    totals.deposit += parseFinanceNumber(a.tenantDeposit);
+                });
+            });
+            return totals;
+        }
+        function renderRentalFinanceTotals() {
+            const panel = document.getElementById('rentalFinanceSummary');
+            if (!panel) return;
+            panel.classList.toggle('hidden', !canViewRentalFinance());
+            if (!canViewRentalFinance()) return;
+            const t = rentalFinanceTotals || calculateRentalFinanceTotals();
+            const owner = parseFinanceNumber(t.owner), tenant = parseFinanceNumber(t.tenant), deposit = parseFinanceNumber(t.deposit);
+            document.getElementById('financeOwnerTotal').value = owner.toLocaleString('en-US');
+            document.getElementById('financeTenantTotal').value = tenant.toLocaleString('en-US');
+            document.getElementById('financeAllCommissionsTotal').value = parseFinanceNumber(t.all ?? (owner + tenant)).toLocaleString('en-US');
+            document.getElementById('financeDepositTotal').value = deposit.toLocaleString('en-US');
+            const editable = canEditRentalFinance();
+            ['financeOwnerTotal','financeTenantTotal','financeAllCommissionsTotal','financeDepositTotal'].forEach(id => {
+                const input = document.getElementById(id);
+                if (!input) return;
+                input.readOnly = !editable;
+                input.classList.toggle('opacity-80', !editable);
+                input.classList.toggle('cursor-default', !editable);
+                input.setAttribute('aria-readonly', String(!editable));
+            });
+            const saveButton = document.getElementById('saveRentalFinanceTotalsBtn');
+            if (saveButton) saveButton.classList.toggle('hidden', !editable);
+            const note = document.getElementById('rentalFinancePermissionNote');
+            if (note) note.textContent = editable
+                ? 'يمكن للمدير تعديل الإجماليات وحفظها.'
+                : 'وضع مشاهدة فقط — لا يمكن لقسم الخدمات تعديل العمولات أو التأمينات.';
+        }
+        function saveRentalFinanceTotals() {
+            if (!canEditRentalFinance()) { alert('التعديل والحفظ متاحان للمدير محمد العبيدي فقط.'); renderRentalFinanceTotals(); return; }
+            const owner = parseFinanceNumber(document.getElementById('financeOwnerTotal').value);
+            const tenant = parseFinanceNumber(document.getElementById('financeTenantTotal').value);
+            const all = parseFinanceNumber(document.getElementById('financeAllCommissionsTotal').value);
+            const deposit = parseFinanceNumber(document.getElementById('financeDepositTotal').value);
+            if (all !== owner + tenant) {
+                if (!confirm('إجمالي العمولات للطرفين لا يساوي مجموع عمولة المالك والمستأجر. هل تريد حفظ القيم كما أدخلتها؟')) return;
+            }
+            rentalFinanceTotals = { owner, tenant, all, deposit, manuallyEdited: true, updatedAt: Date.now() };
+            localStorage.setItem('royal_rental_finance_totals', JSON.stringify(rentalFinanceTotals));
+            db.ref('rentalFinanceTotals').set(rentalFinanceTotals).then(() => alert('تم حفظ إجماليات العمولات والتأمينات ومزامنتها.')).catch(err => { console.error(err); alert('تم حفظها محلياً، لكن تعذرت المزامنة مع قاعدة البيانات.'); });
+        }
+        db.ref('rentalFinanceTotals').once('value', snap => {
+            const remote = snap.val();
+            if (remote && typeof remote === 'object') rentalFinanceTotals = remote;
+            else {
+                try { rentalFinanceTotals = JSON.parse(localStorage.getItem('royal_rental_finance_totals') || 'null'); } catch(e) { rentalFinanceTotals = null; }
+            }
+            if (!rentalFinanceTotals || !rentalFinanceTotals.manuallyEdited) rentalFinanceTotals = calculateRentalFinanceTotals();
+            renderRentalFinanceTotals();
+        });
+        db.ref('rentalFinanceTotals').on('value', snap => {
+            const remote = snap.val();
+            if (remote && typeof remote === 'object') {
+                rentalFinanceTotals = remote.manuallyEdited ? remote : calculateRentalFinanceTotals();
+                localStorage.setItem('royal_rental_finance_totals', JSON.stringify(rentalFinanceTotals));
+                renderRentalFinanceTotals();
+            }
+        });
+
         function hasFullPermission() {
             if (currentRole === 'admin' || currentUserKey === 'admin') return true;
             const perms = systemConfig.permissions || {};
@@ -1439,13 +1570,12 @@ db.ref('units').once('value', (snapshot) => {
                 if (item.ownerIsResident) totalResidents += 1;
                 
                 if (item.tenant && item.tenant.trim()) {
+                    totalTenants += 1;
                     if (item.tenantIsResident) totalResidents += 1;
 
                     if (item.isCanceled) {
                         canceledContractsCount += 1;
                     } else {
-                        // إجمالي المستأجرين يشمل فقط خانات المستأجرين ذات العقود غير المفسوخة.
-                        totalTenants += 1;
                         activeContractsCount += 1;
                         const t = String(item.apartmentType || 'A1').trim().toUpperCase();
                         const group = t.startsWith('A') ? 'A' : t.startsWith('B') ? 'B' : t.startsWith('C') ? 'C' : t.startsWith('S') ? 'S' : null;
@@ -1458,8 +1588,8 @@ db.ref('units').once('value', (snapshot) => {
                 }
 
                 if (item.archiveCanceledTenants && item.archiveCanceledTenants.length > 0) {
-                    // المؤرشفون بسبب فسخ العقد يدخلون في إحصائية العقود المفسوخة فقط.
                     canceledContractsCount += item.archiveCanceledTenants.length;
+                    totalTenants += item.archiveCanceledTenants.length;
                 }
 
                 // يُحسب المالك/المستأجر المقيم كشخص واحد فقط؛ لا تُضاف أسماء أفراد العائلة إلى هذا المؤشر.
@@ -1592,6 +1722,7 @@ db.ref('units').once('value', (snapshot) => {
             currentRole = role;
             currentRoleDisplayName = displayName;
             currentUserKey = userKey || role;
+            renderRentalFinanceTotals();
 
             document.getElementById('btnAdminRole').className = role === 'admin' ? "px-2.5 py-1.5 rounded-lg text-xs font-bold transition bg-blue-600 text-white" : "px-2.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white";
             const maintBtn = document.getElementById('btnMaintenanceRoleBtn');
@@ -1905,6 +2036,7 @@ db.ref('units').once('value', (snapshot) => {
                         <span class="text-white font-extrabold text-base"><i class="fa-solid fa-user-tie text-blue-400 ml-1"></i>${highlightText(item.owner, queries.qName)} ${item.ownerIsResident ? '<span class="text-xs text-sky-300 font-normal">[مقيم]</span>' : ''}</span>
                         ${ownerPhonesStr ? `<div class="text-amber-400 font-mono text-sm font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(ownerPhonesStr, queries.qPhone)}</div>` : ''}
                         ${maintenanceInfoHtml}
+                        ${(canViewRentalFinance() && item.ownerCommission !== undefined && item.ownerCommission !== '') ? `<div class="text-xs text-blue-300 font-bold bg-blue-950/30 border border-blue-500/20 rounded-lg px-2 py-1 w-fit">عمولة المالك: ${esc(displayFinanceAmount(item.ownerCommission))}</div>` : ''}
                         ${ownerDetailsHtml}
                     </div>
                 `;
@@ -1959,6 +2091,8 @@ db.ref('units').once('value', (snapshot) => {
                             <span class="text-white font-extrabold text-base"><i class="fa-solid fa-user text-emerald-400 ml-1"></i>${highlightText(item.tenant, queries.qName)} ${item.tenantIsResident ? '<span class="text-xs text-teal-300 font-normal">[مقيم]</span>' : ''}</span>
                             ${tenantPhonesStr ? `<div class="text-emerald-300 font-mono text-sm font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(tenantPhonesStr, queries.qPhone)}</div>` : ''}
                             ${leaseInfo}
+                            ${(canViewRentalFinance() && item.tenantCommission !== undefined && item.tenantCommission !== '') ? `<div class="text-xs text-emerald-300 font-bold bg-emerald-950/30 border border-emerald-500/20 rounded-lg px-2 py-1 w-fit">عمولة المستأجر: ${esc(displayFinanceAmount(item.tenantCommission))}</div>` : ''}
+                            ${(canViewRentalFinance() && item.tenantDeposit !== undefined && item.tenantDeposit !== '') ? `<div class="text-xs text-amber-300 font-bold bg-amber-950/30 border border-amber-500/20 rounded-lg px-2 py-1 w-fit">التأمينات: ${esc(displayFinanceAmount(item.tenantDeposit))}</div>` : ''}
                             ${tenantDetailsHtml}
                         </div>
                     `;
@@ -2011,6 +2145,8 @@ db.ref('units').once('value', (snapshot) => {
             });
             tbody.innerHTML = rowsHtml;
             updateGlobalStatistics();
+            if (!rentalFinanceTotals || !rentalFinanceTotals.manuallyEdited) rentalFinanceTotals = calculateRentalFinanceTotals();
+            renderRentalFinanceTotals();
         }
 
         function toggleSelectAll(master) {
@@ -2064,6 +2200,9 @@ db.ref('units').once('value', (snapshot) => {
                     leaseEnd: document.getElementById('addLeaseEnd').value,
                     rentIQD: document.getElementById('addRentIQD').value,
                     rentUSD: document.getElementById('addRentUSD').value,
+                    ownerCommission: document.getElementById('addOwnerCommission').value.replace(/[^0-9]/g, ''),
+                    tenantCommission: document.getElementById('addTenantCommission').value.replace(/[^0-9]/g, ''),
+                    tenantDeposit: document.getElementById('addTenantDeposit').value.trim(),
                     archiveDate: localDateISO()
                 };
 
@@ -2072,6 +2211,10 @@ db.ref('units').once('value', (snapshot) => {
                     if (item) {
                         if (!item.archiveCanceledTenants) item.archiveCanceledTenants = [];
                         item.archiveCanceledTenants.push(archivedRecord);
+                        if (!item.financeArchive) item.financeArchive = [];
+                        item.financeArchive.push({ tenant: archivedRecord.tenant, tenantCommission: archivedRecord.tenantCommission, tenantDeposit: archivedRecord.tenantDeposit, tenantDepositLabel: archivedRecord.tenantDeposit, archiveDate: archivedRecord.archiveDate });
+                        item.tenantCommission = '';
+                        item.tenantDeposit = '';
                     }
                 }
 
@@ -2081,12 +2224,17 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('addLeaseEnd').value = '';
                 document.getElementById('addRentIQD').value = '';
                 document.getElementById('addRentUSD').value = '';
-                alert("تمت أرشفة العقد بنجاح!");
+                document.getElementById('addTenantCommission').value = '';
+                document.getElementById('addTenantDeposit').value = '';
+                alert("تمت أرشفة العقد بنجاح، وتم الاحتفاظ بعمولة المستأجر والتأمينات ضمن سجل المبالغ المؤرشفة.");
             }
         }
 
         function openFormModal(editData = null) {
             if (!hasFullPermission()) return;
+            const financeFieldsVisible = canViewRentalFinance();
+            document.getElementById('ownerCommissionFields').classList.toggle('hidden', !financeFieldsVisible);
+            document.getElementById('tenantFinanceFields').classList.toggle('hidden', !financeFieldsVisible);
             document.getElementById('editUnitId').value = editData ? editData.id : '';
             document.getElementById('formModalTitle').innerHTML = editData ? `<i class="fa-solid fa-pen-to-square text-amber-400"></i> تعديل بيانات الوحدة السكنية` : `<i class="fa-solid fa-plus text-emerald-400"></i> إضافة وحدة سكنية جديدة`;
 
@@ -2100,6 +2248,7 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('addOwnerPhone1').value = editData && editData.ownerPhones ? editData.ownerPhones[0] || '' : '';
             document.getElementById('addOwnerPhone2').value = editData && editData.ownerPhones ? editData.ownerPhones[1] || '' : '';
             document.getElementById('addOwnerPhone3').value = editData && editData.ownerPhones ? editData.ownerPhones[2] || '' : '';
+            document.getElementById('addOwnerCommission').value = editData ? editData.ownerCommission || '' : '';
             
             document.getElementById('addTenant').value = editData ? editData.tenant : '';
             document.getElementById('addTenantIsResident').checked = editData ? !!editData.tenantIsResident : false;
@@ -2113,6 +2262,8 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('addLeaseEnd').value = editData ? editData.leaseEnd || '' : '';
             document.getElementById('addRentIQD').value = editData ? editData.rentIQD || '' : '';
             document.getElementById('addRentUSD').value = editData ? editData.rentUSD || '' : '';
+            document.getElementById('addTenantCommission').value = editData ? editData.tenantCommission || '' : '';
+            document.getElementById('addTenantDeposit').value = editData ? editData.tenantDeposit || '' : '';
 
             document.getElementById('addNotes').value = editData ? editData.notes : '';
 
@@ -2162,6 +2313,7 @@ db.ref('units').once('value', (snapshot) => {
                 handoverDate: document.getElementById('addHandoverDate').value,
                 ownerIsResident: document.getElementById('addOwnerIsResident').checked,
                 ownerPhones: [document.getElementById('addOwnerPhone1').value, document.getElementById('addOwnerPhone2').value, document.getElementById('addOwnerPhone3').value],
+                ownerCommission: document.getElementById('addOwnerCommission').value.replace(/[^0-9]/g, ''),
                 ownerResidents: Array.from(document.querySelectorAll('#ownerResidentsContainer > div')).map(row => ({
                     name: row.querySelector('.res-name').value, relation: row.querySelector('.res-relation').value, phone: row.querySelector('.res-phone').value, isResident: true
                 })).filter(r => r.name),
@@ -2180,6 +2332,9 @@ db.ref('units').once('value', (snapshot) => {
                 leaseEnd: document.getElementById('addLeaseEnd').value,
                 rentIQD: document.getElementById('addRentIQD').value,
                 rentUSD: document.getElementById('addRentUSD').value,
+                tenantCommission: document.getElementById('addTenantCommission').value.replace(/[^0-9]/g, ''),
+                tenantDeposit: document.getElementById('addTenantDeposit').value.trim(),
+                financeArchive: (editId && unitsData.find(u => u.id === Number(editId))?.financeArchive) || [],
                 tenantResidents: Array.from(document.querySelectorAll('#tenantResidentsContainer > div')).map(row => ({
                     name: row.querySelector('.res-name').value, relation: row.querySelector('.res-relation').value, phone: row.querySelector('.res-phone').value, isResident: true
                 })).filter(r => r.name),
@@ -2222,9 +2377,12 @@ db.ref('units').once('value', (snapshot) => {
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 space-y-2">
                     <h4 class="font-bold text-blue-400 text-base">مالك الوحدة: ${esc(item.owner)}</h4>
                     <p class="text-xs text-slate-300">الهواتف: ${esc((item.ownerPhones || []).filter(Boolean).join(' - ')) || 'لا توجد'}</p>
+                    ${canViewRentalFinance() ? `<p class="text-sm text-blue-300 font-bold">عمولة المالك: ${esc(displayFinanceAmount(item.ownerCommission))}</p>` : ''}
                 </div>
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 space-y-2">
                     <h4 class="font-bold text-emerald-400 text-base">المستأجر الحالي: ${esc(item.tenant) || 'شاغرة'}</h4>
+                    ${canViewRentalFinance() ? `<p class="text-sm text-emerald-300 font-bold">عمولة المستأجر: ${esc(displayFinanceAmount(item.tenantCommission))}</p><p class="text-sm text-amber-300 font-bold">التأمينات: ${esc(displayFinanceAmount(item.tenantDeposit))}</p>` : ''}
+                    ${canViewRentalFinance() && (item.financeArchive||[]).length ? `<div class="mt-2 border-t border-slate-700 pt-2"><b class="text-amber-300">مبالغ العقود المؤرشفة</b>${(item.financeArchive||[]).map(a=>`<p class="text-xs text-slate-300">${esc(a.tenant||'مستأجر سابق')} — عمولة: ${Number(a.tenantCommission||0).toLocaleString('en-US')} د.ع — تأمينات: ${esc(displayFinanceAmount(a.tenantDepositLabel ?? a.tenantDeposit))}</p>`).join('')}</div>` : ''}
                 </div>
             `;
             document.getElementById('detailModal').classList.remove('hidden');
