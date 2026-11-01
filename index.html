@@ -187,7 +187,10 @@
 
                     <div id="cardBox2" class="glass-panel px-3 py-2.5 rounded-xl border border-emerald-500/20 flex items-center justify-between">
                         <div>
-                            <h2 id="statCard2Title" class="text-[11px] font-extrabold text-emerald-300 leading-tight">إجمالي المستأجرين</h2>
+                            <div class="flex items-center gap-1">
+                                <h2 id="statCard2Title" class="text-[11px] font-extrabold text-emerald-300 leading-tight">إجمالي المستأجرين (ساري + مفسوخ)</h2>
+                                <button id="editManualTenantTotalBtn" onclick="openManualTenantTotalModal()" class="hidden text-[10px] bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200 px-1 py-0.5 rounded border border-emerald-700 transition" title="تعديل العدد اليدوي"><i class="fa-solid fa-pen"></i></button>
+                            </div>
                             <h3 id="statTotalTenants" class="text-base lg:text-lg font-black text-white mt-0.5">-</h3>
                         </div>
                         <div id="statCard2Icon" class="bg-emerald-500/10 p-1.5 rounded-lg text-emerald-400 text-xs"><i class="fa-solid fa-house-user"></i></div>
@@ -277,13 +280,23 @@
                 </div>
             </div>
 
-            <!-- Compact Analytics Chart -->
-            <div id="chartSectionContainer" class="hidden glass-panel p-2 rounded-xl border border-slate-700/60 shadow-md lg:col-span-1">
-                <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-slate-800">
-                    <h3 class="text-[11px] font-bold text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-chart-pie"></i> المستأجرة حسب النوع</h3>
+            <!-- Rental analytics charts -->
+            <div id="chartsColumnContainer" class="lg:col-span-1 flex flex-col gap-3">
+                <div id="chartSectionContainer" class="hidden glass-panel p-2 rounded-xl border border-slate-700/60 shadow-md">
+                    <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-slate-800">
+                        <h3 class="text-[11px] font-bold text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-chart-pie"></i> المستأجرة حسب النوع</h3>
+                    </div>
+                    <div class="w-full h-[105px] relative">
+                        <canvas id="apartmentsTypeChart"></canvas>
+                    </div>
                 </div>
-                <div class="w-full h-[88px] relative">
-                    <canvas id="apartmentsTypeChart"></canvas>
+                <div id="buildingChartSectionContainer" class="hidden glass-panel p-2 rounded-xl border border-slate-700/60 shadow-md">
+                    <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-slate-800">
+                        <h3 class="text-[11px] font-bold text-sky-400 flex items-center gap-1"><i class="fa-solid fa-chart-column"></i> المستأجرة حسب العمارة</h3>
+                    </div>
+                    <div class="w-full h-[105px] relative">
+                        <canvas id="apartmentsBuildingChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -314,7 +327,7 @@
                 </div>
                 <div class="relative" id="searchCarWrapper">
                     <i class="fa-solid fa-car absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 text-xs"></i>
-                    <input type="text" id="searchCar" oninput="debounceFilter()" disabled placeholder="بحث بالسيارة..." class="w-full bg-slate-900/50 text-slate-500 placeholder-slate-500 pl-3 pr-9 py-2 rounded-lg border border-slate-800 outline-none text-xs font-medium cursor-not-allowed">
+                    <input type="text" id="searchCar" oninput="debounceFilter()" disabled placeholder="بحث بالسيارة أو الباركود..." class="w-full bg-slate-900/50 text-slate-500 placeholder-slate-500 pl-3 pr-9 py-2 rounded-lg border border-slate-800 outline-none text-xs font-medium cursor-not-allowed">
                 </div>
                 <div id="contractStatusFilterWrapper" class="sm:col-span-2 md:col-span-1">
                     <select id="filterContractStatus" onchange="filterData()" disabled class="w-full bg-slate-900/50 text-slate-500 rounded-lg border border-slate-800 p-2 text-xs outline-none cursor-not-allowed">
@@ -668,6 +681,26 @@
         </div>
     </div>
 
+    <!-- Modal Manual Total Tenants -->
+    <div id="manualTenantTotalModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-panel bg-slate-900 w-full max-w-sm rounded-2xl border border-slate-700 p-6 space-y-4">
+            <div class="text-center space-y-2">
+                <div class="bg-emerald-600/20 text-emerald-400 w-12 h-12 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+                    <i class="fa-solid fa-users text-xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">تعديل إجمالي المستأجرين</h3>
+                <p class="text-xs text-slate-400">أدخل العدد الصحيح. سيستمر البرنامج بإضافة المستأجرين الجدد تلقائياً، ولن يُحذف المستأجر عند فسخ عقده.</p>
+            </div>
+            <div class="space-y-3">
+                <input type="number" id="manualTenantTotalInput" min="0" step="1" value="0" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-sm text-white text-center font-bold outline-none focus:border-emerald-500">
+                <div class="flex gap-2">
+                    <button type="button" onclick="closeModal('manualTenantTotalModal')" class="w-1/2 bg-slate-800 text-slate-300 py-2.5 rounded-xl text-xs font-semibold">إلغاء</button>
+                    <button type="button" onclick="saveManualTenantTotal()" class="w-1/2 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl text-xs font-bold">حفظ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Form -->
     <div id="formModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
         <div class="glass-panel bg-slate-900 w-full max-w-4xl rounded-2xl border border-slate-700 overflow-hidden shadow-2xl max-h-[92vh] flex flex-col">
@@ -876,6 +909,7 @@
         let currentRoleDisplayName = '';
         let currentUserKey = '';
         let apartmentsChartInstance = null;
+        let apartmentsBuildingChartInstance = null;
         
         let systemConfig = {
             passwords: {
@@ -892,6 +926,16 @@
         };
         
         let manualCanceledCount = Number(localStorage.getItem('royal_manual_canceled') || 0);
+        // فرق يدوي على عدد المستأجرين؛ يبقى مطبقاً مع الزيادة التلقائية للمستأجرين الجدد.
+        let manualTenantCountAdjustment = Number(localStorage.getItem('royal_manual_tenant_adjustment') || 0);
+        db.ref('manualTenantCountAdjustment').on('value', snap => {
+            const remoteAdjustment = snap.val();
+            if (remoteAdjustment !== null && Number.isFinite(Number(remoteAdjustment))) {
+                manualTenantCountAdjustment = Number(remoteAdjustment);
+                localStorage.setItem('royal_manual_tenant_adjustment', String(manualTenantCountAdjustment));
+            }
+            if (typeof updateGlobalStatistics === 'function') updateGlobalStatistics();
+        });
 
         const SHIFT_PASSWORDS = {
             morning: { key: 'morning', name: '☀️ الشفت الصباحي' },
@@ -1470,19 +1514,58 @@ db.ref('units').once('value', (snapshot) => {
         function canEditRentalFinance() { return currentRole === 'admin' || currentUserKey === 'admin'; }
         function parseFinanceNumber(v) { return Number(String(v ?? '').replace(/[^0-9.-]/g, '')) || 0; }
         function displayFinanceAmount(v) { const raw = String(v ?? '').trim(); if (!raw) return '—'; const n = parseFinanceNumber(raw); return n ? n.toLocaleString('en-US') + ' د.ع' : raw; }
+        function getUnitFinanceAmounts(unit) {
+            const totals = { owner: 0, tenant: 0, deposit: 0 };
+            if (!unit) return totals;
+            totals.owner += parseFinanceNumber(unit.ownerCommission);
+            totals.tenant += parseFinanceNumber(unit.tenantCommission);
+            totals.deposit += parseFinanceNumber(unit.tenantDeposit);
+            (unit.financeArchive || []).forEach(a => {
+                totals.owner += parseFinanceNumber(a.ownerCommission);
+                totals.tenant += parseFinanceNumber(a.tenantCommission);
+                totals.deposit += parseFinanceNumber(a.tenantDeposit);
+            });
+            return totals;
+        }
         function calculateRentalFinanceTotals() {
             const totals = { owner: 0, tenant: 0, deposit: 0 };
             (unitsData || []).forEach(u => {
-                totals.owner += parseFinanceNumber(u.ownerCommission);
-                totals.tenant += parseFinanceNumber(u.tenantCommission);
-                totals.deposit += parseFinanceNumber(u.tenantDeposit);
-                (u.financeArchive || []).forEach(a => {
-                    totals.owner += parseFinanceNumber(a.ownerCommission);
-                    totals.tenant += parseFinanceNumber(a.tenantCommission);
-                    totals.deposit += parseFinanceNumber(a.tenantDeposit);
-                });
+                const unitTotals = getUnitFinanceAmounts(u);
+                totals.owner += unitTotals.owner;
+                totals.tenant += unitTotals.tenant;
+                totals.deposit += unitTotals.deposit;
             });
+            totals.all = totals.owner + totals.tenant;
             return totals;
+        }
+        function persistRentalFinanceTotalsSilently() {
+            if (!rentalFinanceTotals) return;
+            rentalFinanceTotals.updatedAt = Date.now();
+            localStorage.setItem('royal_rental_finance_totals', JSON.stringify(rentalFinanceTotals));
+            db.ref('rentalFinanceTotals').set(rentalFinanceTotals).catch(err => console.error('تعذرت مزامنة الإجماليات المالية:', err));
+            renderRentalFinanceTotals();
+        }
+        function syncRentalFinanceTotalsAfterUnitSave(previousTotals, previousUnitAmounts, newUnit) {
+            const nextUnitAmounts = getUnitFinanceAmounts(newUnit);
+            const deltaOwner = nextUnitAmounts.owner - previousUnitAmounts.owner;
+            const deltaTenant = nextUnitAmounts.tenant - previousUnitAmounts.tenant;
+            const deltaDeposit = nextUnitAmounts.deposit - previousUnitAmounts.deposit;
+            if (previousTotals && previousTotals.manuallyEdited) {
+                const oldOwner = parseFinanceNumber(previousTotals.owner);
+                const oldTenant = parseFinanceNumber(previousTotals.tenant);
+                rentalFinanceTotals = {
+                    ...previousTotals,
+                    owner: oldOwner + deltaOwner,
+                    tenant: oldTenant + deltaTenant,
+                    all: parseFinanceNumber(previousTotals.all ?? (oldOwner + oldTenant)) + deltaOwner + deltaTenant,
+                    deposit: parseFinanceNumber(previousTotals.deposit) + deltaDeposit,
+                    manuallyEdited: true
+                };
+            } else {
+                rentalFinanceTotals = calculateRentalFinanceTotals();
+                rentalFinanceTotals.manuallyEdited = false;
+            }
+            persistRentalFinanceTotalsSilently();
         }
         function renderRentalFinanceTotals() {
             const panel = document.getElementById('rentalFinanceSummary');
@@ -1566,21 +1649,25 @@ db.ref('units').once('value', (snapshot) => {
             const next30Date = new Date(todayDate); next30Date.setDate(next30Date.getDate() + 30);
             const next30Str = localDateISO(next30Date);
             const rentedTypesCount = { A: 0, B: 0, C: 0, S: 0 };
+            const rentedBuildingsCount = {};
 
             unitsData.forEach(item => {
                 if (item.ownerIsResident) totalResidents += 1;
                 
-                if (item.tenant && item.tenant.trim()) {
+                if (item.tenant && String(item.tenant).trim()) {
+                    // إجمالي المستأجرين يشمل الحاليين حتى لو عُلّم عقدهم مفسوخاً.
+                    totalTenants += 1;
                     if (item.tenantIsResident) totalResidents += 1;
 
                     if (item.isCanceled) {
                         canceledContractsCount += 1;
                     } else {
-                        totalTenants += 1;
                         activeContractsCount += 1;
                         const t = String(item.apartmentType || 'A1').trim().toUpperCase();
                         const group = t.startsWith('A') ? 'A' : t.startsWith('B') ? 'B' : t.startsWith('C') ? 'C' : t.startsWith('S') ? 'S' : null;
                         if (group) rentedTypesCount[group]++;
+                        const buildingName = String(item.building || 'غير محدد').trim() || 'غير محدد';
+                        rentedBuildingsCount[buildingName] = (rentedBuildingsCount[buildingName] || 0) + 1;
                         if (item.leaseEnd) {
                             if (item.leaseEnd < todayStr) expiredLeasesCount++;
                             else if (item.leaseEnd <= next30Str) upcomingLeasesCount++;
@@ -1589,6 +1676,7 @@ db.ref('units').once('value', (snapshot) => {
                 }
 
                 if (item.archiveCanceledTenants && item.archiveCanceledTenants.length > 0) {
+                    totalTenants += item.archiveCanceledTenants.length;
                     canceledContractsCount += item.archiveCanceledTenants.length;
                 }
 
@@ -1602,7 +1690,7 @@ db.ref('units').once('value', (snapshot) => {
             });
 
             document.getElementById('statTotalResidents').innerText = totalResidents;
-            document.getElementById('statTotalTenants').innerText = totalTenants;
+            document.getElementById('statTotalTenants').innerText = Math.max(0, totalTenants + manualTenantCountAdjustment);
             document.getElementById('statTotalCars').innerText = totalCars;
             document.getElementById('statActiveContracts').innerText = activeContractsCount;
             document.getElementById('statCanceledContracts').innerText = canceledContractsCount;
@@ -1612,6 +1700,7 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('statUpcomingLeases').innerText = upcomingLeasesCount;
 
             renderApartmentsChart(rentedTypesCount);
+            renderApartmentsByBuildingChart(rentedBuildingsCount);
 
             if (currentRole === 'maintenance') {
                 document.getElementById('statCard1Title').innerText = "إجمالي الوحدات السكنية غير منتهية الصيانة";
@@ -1629,7 +1718,7 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('statsContainer').className = "grid grid-cols-2 gap-3";
             } else if (currentRole === 'viewer') {
                 document.getElementById('statCard1Title').innerText = "إجمالي الساكنين";
-                document.getElementById('statCard2Title').innerText = "إجمالي المستأجرين";
+                document.getElementById('statCard2Title').innerText = "إجمالي المستأجرين (ساري + مفسوخ)";
                 document.getElementById('cardBox3').style.display = 'flex';
                 document.getElementById('cardBox4').style.display = 'none';
                 document.getElementById('cardBox5').style.display = 'none';
@@ -1640,7 +1729,7 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('statsContainer').className = "grid grid-cols-3 gap-3";
             } else {
                 document.getElementById('statCard1Title').innerText = "إجمالي الساكنين";
-                document.getElementById('statCard2Title').innerText = "إجمالي المستأجرين";
+                document.getElementById('statCard2Title').innerText = "إجمالي المستأجرين (ساري + مفسوخ)";
                 document.getElementById('cardBox3').style.display = 'flex';
                 document.getElementById('cardBox4').style.display = 'flex';
                 document.getElementById('cardBox5').style.display = 'flex';
@@ -1703,6 +1792,39 @@ db.ref('units').once('value', (snapshot) => {
             });
         }
 
+        function renderApartmentsByBuildingChart(countsData) {
+            const chartContainer = document.getElementById('buildingChartSectionContainer');
+            if (currentRole === 'admin' || currentRole === 'services') chartContainer.classList.remove('hidden');
+            else { chartContainer.classList.add('hidden'); return; }
+
+            const labels = Object.keys(countsData || {}).sort((a, b) => a.localeCompare(b, 'en', {numeric: true}));
+            const chartLabels = labels.length ? labels : ['—'];
+            const values = labels.length ? labels.map(key => Number(countsData[key] || 0)) : [0];
+            const canvas = document.getElementById('apartmentsBuildingChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (apartmentsBuildingChartInstance) {
+                apartmentsBuildingChartInstance.data.labels = chartLabels;
+                apartmentsBuildingChartInstance.data.datasets[0].data = values;
+                apartmentsBuildingChartInstance.update();
+                return;
+            }
+            apartmentsBuildingChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: chartLabels, datasets: [{ data: values, backgroundColor: CHART_COLORS, borderRadius: 4, barThickness: 9, maxBarThickness: 11 }] },
+                options: {
+                    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                    layout: { padding: { left: 0, right: 18, top: 0, bottom: 0 } },
+                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                    scales: {
+                        x: { beginAtZero: true, grace: '20%', ticks: { display: false, precision: 0 }, grid: { display: false }, border: { display: false } },
+                        y: { ticks: { color: '#cbd5e1', font: { family: 'Cairo', size: 9, weight: 'bold' }, padding: 2 }, grid: { display: false }, border: { display: false } }
+                    }
+                },
+                plugins: [countLabelsPlugin]
+            });
+        }
+
         function openManualCanceledModal() {
             if (currentRole !== 'admin') return;
             document.getElementById('manualCanceledInput').value = manualCanceledCount;
@@ -1716,6 +1838,34 @@ db.ref('units').once('value', (snapshot) => {
             closeModal('manualCanceledModal');
             updateGlobalStatistics();
             alert("تم تحديث عدد العقود المفسوخة اليدوي بنجاح!");
+        }
+
+        function calculateTotalTenantRecords() {
+            return (unitsData || []).reduce((total, item) => {
+                const currentTenant = item.tenant && String(item.tenant).trim() ? 1 : 0;
+                const archivedTenants = Array.isArray(item.archiveCanceledTenants) ? item.archiveCanceledTenants.length : 0;
+                return total + currentTenant + archivedTenants;
+            }, 0);
+        }
+
+        function openManualTenantTotalModal() {
+            if (currentRole !== 'admin') return;
+            const currentTotal = Math.max(0, calculateTotalTenantRecords() + manualTenantCountAdjustment);
+            document.getElementById('manualTenantTotalInput').value = currentTotal;
+            document.getElementById('manualTenantTotalModal').classList.remove('hidden');
+        }
+
+        function saveManualTenantTotal() {
+            if (currentRole !== 'admin') return;
+            const desiredTotal = Math.max(0, Math.floor(Number(document.getElementById('manualTenantTotalInput').value) || 0));
+            manualTenantCountAdjustment = desiredTotal - calculateTotalTenantRecords();
+            localStorage.setItem('royal_manual_tenant_adjustment', String(manualTenantCountAdjustment));
+            db.ref('manualTenantCountAdjustment').set(manualTenantCountAdjustment).catch(err => {
+                console.error(err);
+                alert('تم حفظ التعديل على هذا الجهاز، لكن تعذرت مزامنته مع بقية الأجهزة.');
+            });
+            closeModal('manualTenantTotalModal');
+            updateGlobalStatistics();
         }
 
         function switchRole(role, displayName, userKey = null) {
@@ -1800,6 +1950,8 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('adminBackupTools').classList.toggle('hidden', role !== 'admin');
             const editManualBtn = document.getElementById('editManualCanceledBtn');
             if(editManualBtn) editManualBtn.classList.toggle('hidden', role !== 'admin');
+            const editManualTenantBtn = document.getElementById('editManualTenantTotalBtn');
+            if(editManualTenantBtn) editManualTenantBtn.classList.toggle('hidden', role !== 'admin');
             
             filterData();
         }
@@ -1893,7 +2045,7 @@ db.ref('units').once('value', (snapshot) => {
                 }
 
                 if (qCar) {
-                    const carText = c => [c.type, c.carType, c.brand, c.make, c.model, c.color, c.carColor, c.number, c.carNum, c.plate, c.plateNumber, c.carNumber]
+                    const carText = c => [c.type, c.carType, c.brand, c.make, c.model, c.color, c.carColor, c.number, c.carNum, c.plate, c.plateNumber, c.carNumber, c.barcode, c.barCode, c.qrCode, c.code]
                         .filter(v => v !== undefined && v !== null).map(v => String(v)).join(' ');
                     const allCars = [
                         ...(Array.isArray(item.ownerCars) ? item.ownerCars : []).map(carText),
@@ -2305,6 +2457,9 @@ db.ref('units').once('value', (snapshot) => {
             e.preventDefault();
             if (!hasFullPermission()) return;
             const editId = document.getElementById('editUnitId').value;
+            const previousUnitForFinance = editId ? unitsData.find(u => u.id === Number(editId)) : null;
+            const previousUnitFinanceAmounts = getUnitFinanceAmounts(previousUnitForFinance);
+            const previousFinanceTotals = rentalFinanceTotals ? { ...rentalFinanceTotals } : null;
 
             let existingArchive = [];
             if (editId) {
@@ -2327,8 +2482,8 @@ db.ref('units').once('value', (snapshot) => {
                     name: row.querySelector('.res-name').value, relation: row.querySelector('.res-relation').value, phone: row.querySelector('.res-phone').value, isResident: true
                 })).filter(r => r.name),
                 ownerCars: Array.from(document.querySelectorAll('#ownerCarsContainer > div')).map(row => ({
-                    type: row.querySelector('.car-type').value, color: row.querySelector('.car-color').value, number: row.querySelector('.car-num').value
-                })).filter(c => c.type),
+                    type: row.querySelector('.car-type').value, color: row.querySelector('.car-color').value, number: row.querySelector('.car-num').value, barcode: row.querySelector('.car-barcode')?.value || ''
+                })).filter(c => c.type || c.number || c.barcode),
                 ownerAuth: Array.from(document.querySelectorAll('#ownerAuthContainer > div')).map(row => ({
                     name: row.querySelector('.auth-name').value, type: row.querySelector('.auth-type').value, startDate: row.querySelector('.auth-start-date').value, expiryDate: row.querySelector('.auth-expiry-date').value, carType: row.querySelector('.auth-car-type').value, carColor: row.querySelector('.auth-car-color').value, carNum: row.querySelector('.auth-car-num').value
                 })).filter(a => a.name),
@@ -2348,8 +2503,8 @@ db.ref('units').once('value', (snapshot) => {
                     name: row.querySelector('.res-name').value, relation: row.querySelector('.res-relation').value, phone: row.querySelector('.res-phone').value, isResident: true
                 })).filter(r => r.name),
                 tenantCars: Array.from(document.querySelectorAll('#tenantCarsContainer > div')).map(row => ({
-                    type: row.querySelector('.car-type').value, color: row.querySelector('.car-color').value, number: row.querySelector('.car-num').value
-                })).filter(c => c.type),
+                    type: row.querySelector('.car-type').value, color: row.querySelector('.car-color').value, number: row.querySelector('.car-num').value, barcode: row.querySelector('.car-barcode')?.value || ''
+                })).filter(c => c.type || c.number || c.barcode),
                 tenantAuth: Array.from(document.querySelectorAll('#tenantAuthContainer > div')).map(row => ({
                     name: row.querySelector('.auth-name').value, type: row.querySelector('.auth-type').value, startDate: row.querySelector('.auth-start-date').value, expiryDate: row.querySelector('.auth-expiry-date').value, carType: row.querySelector('.auth-car-type').value, carColor: row.querySelector('.auth-car-color').value, carNum: row.querySelector('.auth-car-num').value
                 })).filter(a => a.name),
@@ -2365,6 +2520,7 @@ db.ref('units').once('value', (snapshot) => {
             }
 
             saveToStorage();
+            syncRentalFinanceTotalsAfterUnitSave(previousFinanceTotals, previousUnitFinanceAmounts, unitPayload);
             closeModal('formModal');
             filterData();
             e.target.reset();
@@ -2414,15 +2570,16 @@ db.ref('units').once('value', (snapshot) => {
             container.appendChild(div);
         }
 
-        function addCarInputRow(containerId, data = {type:'', color:'', number:''}) {
+        function addCarInputRow(containerId, data = {type:'', color:'', number:'', barcode:''}) {
             const container = document.getElementById(containerId);
             const div = document.createElement('div');
-            div.className = "grid grid-cols-1 md:grid-cols-3 gap-2 bg-slate-900/60 p-2 rounded-lg border border-slate-700/50 relative";
+            div.className = "grid grid-cols-1 md:grid-cols-4 gap-2 bg-slate-900/60 p-2 rounded-lg border border-slate-700/50 relative";
             div.innerHTML = `
-                <input type="text" placeholder="نوع السيارة" value="${esc(data.type)}" class="car-type bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
-                <input type="text" placeholder="لون السيارة" value="${esc(data.color)}" class="car-color bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                <input type="text" placeholder="نوع السيارة" value="${esc(data.type || data.carType || '')}" class="car-type bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                <input type="text" placeholder="لون السيارة" value="${esc(data.color || data.carColor || '')}" class="car-color bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                <input type="text" placeholder="رقم اللوحة" value="${esc(data.number || data.carNum || data.carNumber || '')}" class="car-num bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
                 <div class="flex items-center gap-1">
-                    <input type="text" placeholder="رقم اللوحة" value="${esc(data.number)}" class="car-num w-full bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
+                    <input type="text" placeholder="باركود السيارة" value="${esc(data.barcode || data.barCode || data.qrCode || '')}" class="car-barcode w-full bg-slate-800 border border-slate-700 rounded p-1.5 text-xs text-white">
                     <button type="button" onclick="this.closest('div.grid').remove()" class="text-rose-400 px-2"><i class="fa-solid fa-xmark"></i></button>
                 </div>
             `;
