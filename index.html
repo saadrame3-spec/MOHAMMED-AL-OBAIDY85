@@ -99,6 +99,32 @@
         body.font-size-sm { font-size: 13px; }
         body.font-size-md { font-size: 15px; }
         body.font-size-lg { font-size: 18px; }
+
+        /* تكبير بطاقات الإحصائيات والإجماليات وتوسيط محتوياتها */
+        #statsContainer > [id^="cardBox"], #rentalFinanceSummary > label.glass-panel {
+            min-height: 104px;
+            padding: 14px 12px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 7px !important;
+            text-align: center !important;
+        }
+        #statsContainer > [id^="cardBox"] > div,
+        #rentalFinanceSummary > label.glass-panel > span,
+        #rentalFinanceSummary > label.glass-panel > input {
+            width: 100%;
+            text-align: center !important;
+        }
+        #statsContainer > [id^="cardBox"] h2,
+        #rentalFinanceSummary > label.glass-panel > span { font-size: 13px !important; line-height: 1.5 !important; }
+        #statsContainer > [id^="cardBox"] h3,
+        #rentalFinanceSummary > label.glass-panel > input { font-size: 21px !important; line-height: 1.35 !important; }
+        #statsContainer > [id^="cardBox"] > div:last-child { margin: 0 !important; }
+        #btnAdminRole, #btnServicesRole { padding: 10px 15px !important; font-size: 14px !important; }
+        #btnAdminRole i, #btnServicesRole i { font-size: 15px !important; }
+        #addTenantDeposit { direction: ltr; text-align: right; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between theme-dark font-size-md" id="appBody">
@@ -842,7 +868,7 @@
 
                     <div id="tenantFinanceFields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/20">
                         <div><label class="text-xs text-emerald-300 block mb-1">عمولة المستأجر (د.ع)</label><input type="text" id="addTenantCommission" oninput="formatCurrencyInput(this)" placeholder="مبلغ عمولة المستأجر" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
-                        <div><label class="text-xs text-amber-300 block mb-1">التأمينات المستلمة من المستأجر (د.ع)</label><input type="text" id="addTenantDeposit" placeholder="مبلغ التأمينات أو اكتب تعهد في الملاحظات" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
+                        <div><label class="text-xs text-amber-300 block mb-1">التأمينات المستلمة من المستأجر (د.ع)</label><input type="text" id="addTenantDeposit" oninput="formatCurrencyInput(this)" placeholder="مبلغ التأمينات أو اكتب تعهد في الملاحظات" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
                     </div>
                     <div>
                         <div class="flex justify-between items-center mb-2">
@@ -2078,10 +2104,19 @@ db.ref('units').once('value', (snapshot) => {
             }
 
             if (cars && cars.length > 0) {
-                html += `<div class="mt-1"><span class="text-[11px] text-blue-400 font-extrabold flex items-center gap-1 mb-1"><i class="fa-solid fa-car text-[10px]"></i> السيارات المسجلة:</span><div class="grid grid-cols-1 md:grid-cols-2 gap-1">`;
-                cars.forEach(c => {
-                    let carStr = `${c.type || ''} ${c.color || ''} [${c.number || ''}]`;
-                    html += `<div class="bg-slate-900/80 p-2 rounded-lg border border-blue-900/40 text-xs text-slate-200 font-semibold">${highlightText(carStr, queries.qCar)}</div>`;
+                html += `<div class="mt-1"><span class="text-[11px] text-blue-400 font-extrabold flex items-center gap-1 mb-1"><i class="fa-solid fa-car text-[10px]"></i> سيارات ${authField === 'ownerAuth' ? 'المالك' : 'المستأجر'}:</span><div class="grid grid-cols-1 md:grid-cols-2 gap-1">`;
+                cars.forEach((c, carIndex) => {
+                    const carType = c.type || c.carType || c.brand || c.make || c.model || '';
+                    const carColor = c.color || c.carColor || '';
+                    const carNumber = c.number || c.carNum || c.carNumber || c.plate || c.plateNumber || '';
+                    const carBarcode = c.barcode || c.barCode || c.qrCode || c.code || '';
+                    html += `<div class="bg-slate-900/80 p-2 rounded-lg border border-blue-900/40 text-xs text-slate-200 font-semibold space-y-1">
+                        <div class="text-blue-300 font-extrabold">السيارة ${carIndex + 1}</div>
+                        ${carType ? `<div><b>النوع:</b> ${highlightText(carType, queries.qCar)}</div>` : ''}
+                        ${carColor ? `<div><b>اللون:</b> ${highlightText(carColor, queries.qCar)}</div>` : ''}
+                        ${carNumber ? `<div><b>رقم اللوحة:</b> <span dir="auto">${highlightText(carNumber, queries.qCar)}</span></div>` : ''}
+                        ${carBarcode ? `<div><b>الباركود:</b> <span class="font-mono text-amber-300" dir="ltr">${highlightText(carBarcode, queries.qCar)}</span></div>` : ''}
+                    </div>`;
                 });
                 html += `</div></div>`;
             }
@@ -2424,7 +2459,7 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('addRentIQD').value = editData ? editData.rentIQD || '' : '';
             document.getElementById('addRentUSD').value = editData ? editData.rentUSD || '' : '';
             document.getElementById('addTenantCommission').value = editData ? editData.tenantCommission || '' : '';
-            document.getElementById('addTenantDeposit').value = editData ? editData.tenantDeposit || '' : '';
+            document.getElementById('addTenantDeposit').value = editData ? (editData.tenantDeposit ? parseFinanceNumber(editData.tenantDeposit).toLocaleString('en-US') : '') : '';
 
             document.getElementById('addNotes').value = editData ? editData.notes : '';
 
