@@ -1993,8 +1993,11 @@ db.ref('units').once('value', (snapshot) => {
                 }
 
                 // يُحسب المالك/المستأجر المقيم كشخص واحد فقط؛ لا تُضاف أسماء أفراد العائلة إلى هذا المؤشر.
+                // سيارات المالك تُحسب دائماً، أما سيارات المستأجر فتُحسب فقط إذا كان عقده سارياً.
                 totalCars += (item.ownerCars || []).length;
-                totalCars += (item.tenantCars || []).length;
+                if (item.tenant && String(item.tenant).trim() && !item.isCanceled) {
+                    totalCars += (item.tenantCars || []).length;
+                }
 
                 const maint = getMaintenanceStatusInfo(item.handoverDate);
                 if (maint.status === 'active') maintenanceActiveCount++;
@@ -2692,6 +2695,10 @@ db.ref('units').once('value', (snapshot) => {
                     ownerCommission: document.getElementById('addOwnerCommission').value.replace(/[^0-9]/g, ''),
                     tenantCommission: document.getElementById('addTenantCommission').value.replace(/[^0-9]/g, ''),
                     tenantDeposit: document.getElementById('addTenantDeposit').value.trim(),
+                    tenantCars: (() => {
+                        const currentUnit = unitsData.find(u => u.id === Number(document.getElementById('editUnitId').value));
+                        return (currentUnit?.tenantCars || []).map(car => ({ ...car }));
+                    })(),
                     archiveDate: localDateISO()
                 };
 
