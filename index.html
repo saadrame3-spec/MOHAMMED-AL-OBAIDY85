@@ -125,7 +125,293 @@
         #btnAdminRole, #btnServicesRole { padding: 10px 15px !important; font-size: 14px !important; }
         #btnAdminRole i, #btnServicesRole i { font-size: 15px !important; }
         #addTenantDeposit { direction: ltr; text-align: right; }
-    </style>
+
+        /* إظهار البطاقات المسموح بها لكل حساب بشكل ثابت */
+        #appBody.role-shift #statsContainer > [id^="cardBox"] { display: none !important; }
+        #appBody.role-shift #statsContainer > #cardBox1,
+        #appBody.role-shift #statsContainer > #cardBox3 { display: flex !important; }
+        #appBody.role-maintenance #statsContainer > [id^="cardBox"] { display: none !important; }
+        #appBody.role-maintenance #statsContainer > #cardBox1,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired { display: flex !important; }
+        #appBody.role-shift #statsContainer { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+        #appBody.role-maintenance #statsContainer { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+        @media (max-width: 640px) {
+            #appBody.role-maintenance #statsContainer { grid-template-columns: 1fr !important; }
+        }
+
+        /* إعادة حجم بطاقات الشفتات والصيانة إلى المقاس الأصلي */
+        #appBody.compact-stat-cards #statsContainer > [id^="cardBox"] {
+            min-height: 0 !important;
+            height: auto !important;
+            padding: 10px 12px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            gap: 0 !important;
+            text-align: right !important;
+        }
+        #appBody.compact-stat-cards #statsContainer > [id^="cardBox"] > div {
+            width: auto !important;
+            text-align: right !important;
+        }
+        #appBody.compact-stat-cards #statsContainer > [id^="cardBox"] h2 {
+            font-size: 11px !important;
+            line-height: 1.25 !important;
+        }
+        #appBody.compact-stat-cards #statsContainer > [id^="cardBox"] h3 {
+            font-size: 16px !important;
+            line-height: 1.25 !important;
+        }
+        #appBody.compact-stat-cards #statsContainer > [id^="cardBox"] > div:last-child {
+            margin: 0 !important;
+        }
+        @media (min-width: 1024px) {
+            #appBody.compact-stat-cards #statsContainer > [id^="cardBox"] h3 { font-size: 18px !important; }
+        }
+        /* تكبير بسيط لبطاقات إجماليات الشفتات والصيانة فقط */
+        #appBody.role-shift #statsContainer > [id^="cardBox"],
+        #appBody.role-maintenance #statsContainer > [id^="cardBox"] {
+            min-height: 68px !important;
+            padding: 12px 14px !important;
+        }
+        #appBody.role-shift #statsContainer > [id^="cardBox"] h2,
+        #appBody.role-maintenance #statsContainer > [id^="cardBox"] h2 {
+            font-size: 13px !important;
+            line-height: 1.35 !important;
+        }
+        #appBody.role-shift #statsContainer > [id^="cardBox"] h3,
+        #appBody.role-maintenance #statsContainer > [id^="cardBox"] h3 {
+            font-size: 19px !important;
+            line-height: 1.3 !important;
+        }
+        @media (min-width: 1024px) {
+            #appBody.role-shift #statsContainer > [id^="cardBox"] h3,
+            #appBody.role-maintenance #statsContainer > [id^="cardBox"] h3 {
+                font-size: 21px !important;
+            }
+        }
+    
+        /* بطاقات مربعة وكبيرة لحسابات الشفتات والصيانة */
+        #appBody.role-shift #statsContainer,
+        #appBody.role-maintenance #statsContainer {
+            display: grid !important;
+            gap: 12px !important;
+            align-items: stretch !important;
+        }
+        #appBody.role-shift #statsContainer {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+        #appBody.role-maintenance #statsContainer {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1,
+        #appBody.role-shift #statsContainer > #cardBox3,
+        #appBody.role-maintenance #statsContainer > #cardBox1,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+            box-sizing: border-box !important;
+            aspect-ratio: 1 / 1 !important;
+            min-height: 150px !important;
+            height: auto !important;
+            padding: 16px 10px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            text-align: center !important;
+            border-radius: 18px !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1 > div,
+        #appBody.role-shift #statsContainer > #cardBox3 > div,
+        #appBody.role-maintenance #statsContainer > #cardBox1 > div,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive > div,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired > div {
+            width: 100% !important;
+            text-align: center !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1 h2,
+        #appBody.role-shift #statsContainer > #cardBox3 h2,
+        #appBody.role-maintenance #statsContainer > #cardBox1 h2,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h2,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h2 {
+            font-size: 15px !important;
+            line-height: 1.5 !important;
+            text-align: center !important;
+            white-space: normal !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1 h3,
+        #appBody.role-shift #statsContainer > #cardBox3 h3,
+        #appBody.role-maintenance #statsContainer > #cardBox1 h3,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h3,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h3 {
+            font-size: 30px !important;
+            line-height: 1.2 !important;
+            text-align: center !important;
+            margin: 0 !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1 > div:last-child,
+        #appBody.role-shift #statsContainer > #cardBox3 > div:last-child,
+        #appBody.role-maintenance #statsContainer > #cardBox1 > div:last-child,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive > div:last-child,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired > div:last-child {
+            margin: 0 !important;
+            font-size: 24px !important;
+            padding: 10px !important;
+        }
+        @media (max-width: 640px) {
+            #appBody.role-maintenance #statsContainer {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            #appBody.role-shift #statsContainer > #cardBox1,
+            #appBody.role-shift #statsContainer > #cardBox3,
+            #appBody.role-maintenance #statsContainer > #cardBox1,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+                min-height: 135px !important;
+                padding: 12px 8px !important;
+            }
+            #appBody.role-shift #statsContainer > #cardBox1 h2,
+            #appBody.role-shift #statsContainer > #cardBox3 h2,
+            #appBody.role-maintenance #statsContainer > #cardBox1 h2,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h2,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h2 {
+                font-size: 13px !important;
+            }
+            #appBody.role-shift #statsContainer > #cardBox1 h3,
+            #appBody.role-shift #statsContainer > #cardBox3 h3,
+            #appBody.role-maintenance #statsContainer > #cardBox1 h3,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h3,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h3 {
+                font-size: 27px !important;
+            }
+        }
+
+    
+        /* تصغير المربعات مع الحفاظ على شكلها المربع */
+        #appBody.role-shift #statsContainer > #cardBox1,
+        #appBody.role-shift #statsContainer > #cardBox3,
+        #appBody.role-maintenance #statsContainer > #cardBox1,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+            min-height: 122px !important;
+            max-height: 142px !important;
+            padding: 10px 8px !important;
+            gap: 7px !important;
+            border-radius: 14px !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1 h2,
+        #appBody.role-shift #statsContainer > #cardBox3 h2,
+        #appBody.role-maintenance #statsContainer > #cardBox1 h2,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h2,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h2 {
+            font-size: 13px !important;
+            line-height: 1.35 !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1 h3,
+        #appBody.role-shift #statsContainer > #cardBox3 h3,
+        #appBody.role-maintenance #statsContainer > #cardBox1 h3,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h3,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h3 {
+            font-size: 25px !important;
+        }
+        @media (max-width: 640px) {
+            #appBody.role-shift #statsContainer > #cardBox1,
+            #appBody.role-shift #statsContainer > #cardBox3,
+            #appBody.role-maintenance #statsContainer > #cardBox1,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+                min-height: 112px !important;
+                max-height: 128px !important;
+                padding: 8px 6px !important;
+            }
+            #appBody.role-shift #statsContainer > #cardBox1 h2,
+            #appBody.role-shift #statsContainer > #cardBox3 h2,
+            #appBody.role-maintenance #statsContainer > #cardBox1 h2,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h2,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h2 {
+                font-size: 12px !important;
+            }
+            #appBody.role-shift #statsContainer > #cardBox1 h3,
+            #appBody.role-shift #statsContainer > #cardBox3 h3,
+            #appBody.role-maintenance #statsContainer > #cardBox1 h3,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive h3,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired h3 {
+                font-size: 23px !important;
+            }
+        }
+
+
+        /* توسيط مجموعة المربعات وإضافة مسافات متساوية بينها */
+        #appBody.role-shift #statsContainer,
+        #appBody.role-maintenance #statsContainer {
+            justify-content: center !important;
+            justify-items: center !important;
+            align-content: center !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            column-gap: 18px !important;
+            row-gap: 18px !important;
+            width: 100% !important;
+            max-width: 760px !important;
+        }
+        #appBody.role-shift #statsContainer {
+            grid-template-columns: repeat(2, minmax(122px, 150px)) !important;
+        }
+        #appBody.role-maintenance #statsContainer {
+            grid-template-columns: repeat(3, minmax(122px, 150px)) !important;
+        }
+        #appBody.role-shift #statsContainer > #cardBox1,
+        #appBody.role-shift #statsContainer > #cardBox3,
+        #appBody.role-maintenance #statsContainer > #cardBox1,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+        #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+            width: 100% !important;
+            max-width: 150px !important;
+            margin: 0 auto !important;
+        }
+        @media (max-width: 640px) {
+            #appBody.role-maintenance #statsContainer {
+                grid-template-columns: repeat(2, minmax(112px, 140px)) !important;
+            }
+            #appBody.role-shift #statsContainer {
+                grid-template-columns: repeat(2, minmax(112px, 140px)) !important;
+            }
+            #appBody.role-shift #statsContainer,
+            #appBody.role-maintenance #statsContainer {
+                column-gap: 12px !important;
+                row-gap: 14px !important;
+            }
+            #appBody.role-shift #statsContainer > #cardBox1,
+            #appBody.role-shift #statsContainer > #cardBox3,
+            #appBody.role-maintenance #statsContainer > #cardBox1,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+            #appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+                max-width: 140px !important;
+            }
+        }
+
+
+        /* إبقاء قائمة تصفية العقود والصيانة ظاهرة وقابلة للاستخدام */
+        #appBody.role-services #contractStatusFilterWrapper,
+        #appBody.role-maintenance #contractStatusFilterWrapper {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        #appBody.role-services #filterContractStatus,
+        #appBody.role-maintenance #filterContractStatus {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            cursor: pointer !important;
+            background: #0f172a !important;
+            color: #fff !important;
+        }
+
+</style>
 </head>
 <body class="min-h-screen flex flex-col justify-between theme-dark font-size-md" id="appBody">
 
@@ -1729,22 +2015,23 @@ db.ref('units').once('value', (snapshot) => {
             renderApartmentsByBuildingChart(rentedBuildingsCount);
 
             if (currentRole === 'maintenance') {
-                document.getElementById('statCard1Title').innerText = "إجمالي الوحدات السكنية غير منتهية الصيانة";
-                document.getElementById('statCard2Title').innerText = "إجمالي الوحدات السكنية المنتهية الصيانة";
-                document.getElementById('statTotalResidents').innerText = maintenanceActiveCount;
-                document.getElementById('statTotalTenants').innerText = maintenanceExpiredCount;
-
-                document.getElementById('cardBox3').style.display = 'none';
-                document.getElementById('cardBox4').style.display = 'none';
-                document.getElementById('cardBox5').style.display = 'none';
-                document.getElementById('cardBoxMaintActive').style.display = 'none';
-                document.getElementById('cardBoxMaintExpired').style.display = 'none';
-                document.getElementById('cardBoxExpiredLeases').style.display = 'none';
-                document.getElementById('cardBoxUpcomingLeases').style.display = 'none';
-                document.getElementById('statsContainer').className = "grid grid-cols-2 gap-3";
-            } else if (currentRole === 'viewer') {
+                // الصيانة: إجمالي الساكنين + إحصائيتا الصيانة فقط.
+                document.getElementById('cardBox1').style.display = 'flex';
                 document.getElementById('statCard1Title').innerText = "إجمالي الساكنين";
-                document.getElementById('statCard2Title').innerText = "إجمالي المستأجرين (ساري + مفسوخ)";
+                document.getElementById('statTotalResidents').innerText = totalResidents;
+                document.getElementById('cardBoxMaintActive').style.display = 'flex';
+                document.getElementById('cardBoxMaintExpired').style.display = 'flex';
+
+                ['cardBox2', 'cardBox3', 'cardBox4', 'cardBox5', 'cardBoxExpiredLeases', 'cardBoxUpcomingLeases'].forEach(id => {
+                    document.getElementById(id).style.display = 'none';
+                });
+                document.getElementById('statsContainer').className = "grid grid-cols-1 sm:grid-cols-3 gap-3";
+            } else if (currentRole === 'viewer' && ['morning', 'evening', 'night'].includes(currentUserKey)) {
+                // حسابات الشفتات فقط: إجمالي الساكنين وإجمالي السيارات.
+                document.getElementById('statCard1Title').innerText = "إجمالي الساكنين";
+                document.getElementById('statCard3Title').innerText = "إجمالي السيارات";
+                document.getElementById('cardBox1').style.display = 'flex';
+                document.getElementById('cardBox2').style.display = 'none';
                 document.getElementById('cardBox3').style.display = 'flex';
                 document.getElementById('cardBox4').style.display = 'none';
                 document.getElementById('cardBox5').style.display = 'none';
@@ -1752,8 +2039,10 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('cardBoxMaintExpired').style.display = 'none';
                 document.getElementById('cardBoxExpiredLeases').style.display = 'none';
                 document.getElementById('cardBoxUpcomingLeases').style.display = 'none';
-                document.getElementById('statsContainer').className = "grid grid-cols-3 gap-3";
+                document.getElementById('statsContainer').className = "grid grid-cols-2 gap-3";
             } else {
+                document.getElementById('cardBox1').style.display = 'flex';
+                document.getElementById('cardBox2').style.display = 'flex';
                 document.getElementById('statCard1Title').innerText = "إجمالي الساكنين";
                 document.getElementById('statCard2Title').innerText = "إجمالي المستأجرين (ساري + مفسوخ)";
                 document.getElementById('cardBox3').style.display = 'flex';
@@ -1898,6 +2187,12 @@ db.ref('units').once('value', (snapshot) => {
             currentRole = role;
             currentRoleDisplayName = displayName;
             currentUserKey = userKey || role;
+            const appBody = document.getElementById('appBody');
+            const isShiftAccount = role === 'viewer' && ['morning', 'evening', 'night'].includes(currentUserKey);
+            appBody.classList.toggle('compact-stat-cards', role === 'maintenance' || isShiftAccount);
+            appBody.classList.toggle('role-maintenance', role === 'maintenance');
+            appBody.classList.toggle('role-services', role === 'services');
+            appBody.classList.toggle('role-shift', isShiftAccount);
             renderRentalFinanceTotals();
 
             document.getElementById('btnAdminRole').className = role === 'admin' ? "px-2.5 py-1.5 rounded-lg text-xs font-bold transition bg-blue-600 text-white" : "px-2.5 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white";
@@ -1927,21 +2222,28 @@ db.ref('units').once('value', (snapshot) => {
             const optCanceledContract = document.getElementById('optCanceledContract');
 
             if (role === 'maintenance') {
-                document.getElementById('contractStatusFilterWrapper').style.display = '';
-                if(optActiveMaint) optActiveMaint.style.display = 'block';
-                if(optExpiredMaint) optExpiredMaint.style.display = 'block';
-                if(optExpiredContract) optExpiredContract.style.display = 'none';
-                if(optCanceledContract) optCanceledContract.style.display = 'none';
+                const statusWrapper = document.getElementById('contractStatusFilterWrapper');
+                statusWrapper.style.display = '';
+                statusWrapper.classList.remove('hidden');
+                document.getElementById('filterContractStatus').disabled = false;
+                if(optActiveMaint) optActiveMaint.hidden = false;
+                if(optExpiredMaint) optExpiredMaint.hidden = false;
+                if(optExpiredContract) optExpiredContract.hidden = true;
+                if(optCanceledContract) optCanceledContract.hidden = true;
 
                 document.getElementById('searchAuthWrapper').style.display = 'none';
                 document.getElementById('searchPhoneWrapper').style.display = 'none';
                 document.getElementById('searchCarWrapper').style.display = 'none';
                 document.getElementById('searchGridContainer').className = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3";
             } else if (role === 'services') {
-                if(optActiveMaint) optActiveMaint.style.display = 'none';
-                if(optExpiredMaint) optExpiredMaint.style.display = 'none';
-                if(optExpiredContract) optExpiredContract.style.display = 'block';
-                if(optCanceledContract) optCanceledContract.style.display = 'block';
+                const statusWrapper = document.getElementById('contractStatusFilterWrapper');
+                statusWrapper.style.display = '';
+                statusWrapper.classList.remove('hidden');
+                document.getElementById('filterContractStatus').disabled = false;
+                if(optActiveMaint) optActiveMaint.hidden = true;
+                if(optExpiredMaint) optExpiredMaint.hidden = true;
+                if(optExpiredContract) optExpiredContract.hidden = false;
+                if(optCanceledContract) optCanceledContract.hidden = false;
 
                 document.getElementById('searchAuthWrapper').style.display = 'none';
                 document.getElementById('searchPhoneWrapper').style.display = 'none';
@@ -1949,10 +2251,10 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('contractStatusFilterWrapper').style.display = '';
                 document.getElementById('searchGridContainer').className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
             } else {
-                if(optActiveMaint) optActiveMaint.style.display = 'block';
-                if(optExpiredMaint) optExpiredMaint.style.display = 'block';
-                if(optExpiredContract) optExpiredContract.style.display = 'block';
-                if(optCanceledContract) optCanceledContract.style.display = 'block';
+                if(optActiveMaint) optActiveMaint.hidden = false;
+                if(optExpiredMaint) optExpiredMaint.hidden = false;
+                if(optExpiredContract) optExpiredContract.hidden = false;
+                if(optCanceledContract) optCanceledContract.hidden = false;
 
                 document.getElementById('searchAuthWrapper').style.display = 'block';
                 document.getElementById('searchPhoneWrapper').style.display = 'block';
