@@ -412,6 +412,107 @@
         }
 
 </style>
+<style id="royalNewLayoutStyles">
+@media(min-width:1024px){#appBody.role-shift #statsGridWrapper{grid-column:span 3 / span 3;display:flex;align-items:center;justify-content:center;min-height:310px}#appBody.role-shift #statsContainer{width:min(100%,650px)!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}#appBody.role-shift #shiftChartsPanel{display:block!important}#appBody.role-shift #statsContainer>#cardBox1,#appBody.role-shift #statsContainer>#cardBox3{width:100%!important;min-width:0!important}}
+#appBody.role-shift #shiftChartsPanel{display:block}#appBody:not(.role-shift) #shiftChartsPanel{display:none!important}#carMiniChart{grid-column:1/-1}#backToTopRoyal{transition:opacity .2s}
+</style><style id="royalCompactShiftMaintenance20261104">
+/* Keep the totals and charts near the header for shifts and maintenance only. */
+#appBody.role-shift main, #appBody.role-maintenance main {padding-top:8px!important;}
+#appBody.role-shift #dashboardTopLayout, #appBody.role-maintenance #dashboardTopLayout {gap:8px!important;}
+#appBody.role-shift #statsGridWrapper, #appBody.role-maintenance #statsGridWrapper {min-height:0!important;height:auto!important;display:block!important;grid-column:auto!important;margin:0!important;padding:0!important;}
+#appBody.role-shift #statsContainer, #appBody.role-maintenance #statsContainer {align-content:start!important;justify-content:center!important;row-gap:6px!important;column-gap:8px!important;max-width:100%!important;margin:0 auto!important;}
+#appBody.role-shift #statsContainer {grid-template-columns:repeat(2,minmax(0,150px))!important;}
+#appBody.role-maintenance #statsContainer {grid-template-columns:repeat(3,minmax(0,150px))!important;}
+#appBody.role-shift #statsContainer > #cardBox1,
+#appBody.role-shift #statsContainer > #cardBox3,
+#appBody.role-maintenance #statsContainer > #cardBox1,
+#appBody.role-maintenance #statsContainer > #cardBoxMaintActive,
+#appBody.role-maintenance #statsContainer > #cardBoxMaintExpired {
+  aspect-ratio:auto!important;min-height:66px!important;max-height:none!important;height:auto!important;
+  padding:7px 8px!important;gap:3px!important;border-radius:10px!important;
+}
+#appBody.role-shift #statsContainer > [id^="cardBox"] h2,
+#appBody.role-maintenance #statsContainer > [id^="cardBox"] h2 {font-size:11px!important;line-height:1.25!important;}
+#appBody.role-shift #statsContainer > [id^="cardBox"] h3,
+#appBody.role-maintenance #statsContainer > [id^="cardBox"] h3 {font-size:20px!important;line-height:1.2!important;}
+#appBody.role-shift #statsContainer > [id^="cardBox"] > div:last-child,
+#appBody.role-maintenance #statsContainer > [id^="cardBox"] > div:last-child {font-size:15px!important;padding:3px!important;}
+#appBody.role-shift #chartsColumnContainer, #appBody.role-maintenance #chartsColumnContainer {gap:8px!important;align-items:start!important;}
+#appBody.role-shift #dashboardCarsPanel, #appBody.role-shift #dashboardResidentsPanel,
+#appBody.role-maintenance #dashboardResidentsPanel {padding:8px!important;}
+@media (max-width:480px) {
+ #appBody.role-maintenance #statsContainer {grid-template-columns:repeat(3,minmax(0,1fr))!important;}
+ #appBody.role-maintenance #statsContainer > [id^="cardBox"] h2 {font-size:10px!important;}
+ #appBody.role-maintenance #statsContainer > [id^="cardBox"] h3 {font-size:18px!important;}
+}
+</style>
+<style id="royalRoleLayoutFinal20261104">
+/* Director: tighter totals and charts immediately beneath. */
+#appBody.role-admin #dashboardTopLayout{gap:5px!important}
+#appBody.role-admin #statsContainer{gap:6px!important}
+#appBody.role-admin #statsContainer>[id^="cardBox"]{min-height:70px!important;padding:7px 8px!important;gap:3px!important}
+#appBody.role-admin #statsContainer>[id^="cardBox"] h2{font-size:11px!important;line-height:1.25!important}
+#appBody.role-admin #statsContainer>[id^="cardBox"] h3{font-size:19px!important;line-height:1.2!important}
+#appBody.role-admin #chartsColumnContainer{gap:6px!important}
+#appBody.role-admin #chartsColumnContainer>div,#appBody.role-admin #chartsColumnContainer>section{padding:7px!important}
+/* Desktop: charts and totals share one horizontal line for shift/maintenance. */
+@media(min-width:1024px){
+ #appBody.role-shift #dashboardTopLayout,#appBody.role-maintenance #dashboardTopLayout{display:grid!important;gap:10px!important;align-items:start!important}
+ #appBody.role-shift #dashboardTopLayout{grid-template-columns:minmax(0,1fr) minmax(260px,320px) minmax(0,1fr)!important}
+ #appBody.role-maintenance #dashboardTopLayout{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+ #appBody.role-shift #statsGridWrapper,#appBody.role-maintenance #statsGridWrapper{grid-row:1!important;grid-column:2!important;align-self:start!important;min-height:0!important;display:block!important}
+ #appBody.role-maintenance #statsGridWrapper{grid-column:1!important}
+ #appBody.role-shift #chartsColumnContainer,#appBody.role-maintenance #chartsColumnContainer{display:contents!important}
+ #appBody.role-shift #dashboardCarsPanel{grid-column:1!important;grid-row:1!important;min-width:0}
+ #appBody.role-shift #dashboardResidentsPanel{grid-column:3!important;grid-row:1!important;min-width:0}
+ #appBody.role-maintenance #dashboardResidentsPanel{grid-column:2!important;grid-row:1!important;min-width:0}
+ #appBody.role-shift #statsContainer{grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important}
+ #appBody.role-maintenance #statsContainer{grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important}
+ #appBody.role-shift #statsContainer>[id^="cardBox"],#appBody.role-maintenance #statsContainer>[id^="cardBox"]{max-width:none!important;min-height:80px!important}
+}
+/* Services: keep all visible charts adjacent, rather than stacking. */
+@media(min-width:640px){#appBody.role-services #chartsColumnContainer{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:8px!important}}
+#appBody.role-services #dashboardTopLayout{gap:8px!important}
+#appBody.role-services #chartsColumnContainer>div,#appBody.role-services #chartsColumnContainer>section{min-width:0;padding:8px!important}
+@media(max-width:639px){#appBody.role-services #chartsColumnContainer{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+</style>
+<style id="royalEqualCharts20261104">
+/* Unified chart dimensions and vertical alignment for director, services, maintenance. */
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer {
+  align-items:stretch!important;
+  gap:8px!important;
+}
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer > :is(div,section) {
+  box-sizing:border-box!important;
+  min-width:0!important;
+  height:172px!important;
+  min-height:172px!important;
+  max-height:172px!important;
+  padding:9px!important;
+  overflow:hidden;
+  align-self:start!important;
+}
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer > :is(div,section) h3 {
+  font-size:11px!important;
+  line-height:1.45!important;
+  min-height:19px!important;
+  margin-bottom:5px!important;
+}
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartSectionContainer canvas,
+#appBody:is(.role-admin,.role-services,.role-maintenance) #buildingChartSectionContainer canvas {max-height:110px!important;}
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardCarsBars,
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardResidentsBars {max-height:125px;overflow-y:auto;}
+@media(min-width:1024px){
+  #appBody.role-admin #chartsColumnContainer,
+  #appBody.role-services #chartsColumnContainer {grid-template-columns:repeat(4,minmax(0,1fr))!important;}
+  #appBody.role-maintenance #dashboardTopLayout {grid-template-columns:minmax(0,1fr) minmax(0,310px)!important;align-items:start!important;}
+  #appBody.role-maintenance #dashboardResidentsPanel {grid-column:2!important;grid-row:1!important;width:100%!important;}
+  #appBody.role-maintenance #statsGridWrapper {grid-column:1!important;grid-row:1!important;align-self:start!important;}
+}
+@media(max-width:1023px){
+  #appBody.role-maintenance #dashboardResidentsPanel {width:min(100%,310px)!important;}
+}
+</style>
 </head>
 <body class="min-h-screen flex flex-col justify-between theme-dark font-size-md" id="appBody">
 
@@ -436,6 +537,7 @@
                     <i class="fa-solid fa-bars"></i><span>القائمة</span><i class="fa-solid fa-chevron-down text-[10px]"></i>
                 </button>
                 <div id="adminActionsDropdown" class="hidden absolute left-0 top-full mt-2 z-50 w-56 max-h-[75vh] overflow-y-auto rounded-xl border border-slate-700 bg-slate-900 p-2 shadow-2xl flex-col gap-2">
+                <button onclick="openComprehensiveReports(); closeAdminMenu()" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-2 rounded-lg text-xs font-bold text-right"><i class="fa-solid fa-chart-column"></i> التقارير الشاملة</button>
                 <button onclick="openNotificationsModal(); closeAdminMenu()" class="w-full bg-amber-600/30 hover:bg-amber-600 text-amber-300 hover:text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition border border-amber-500/40 text-right">
                     <i class="fa-solid fa-bell"></i> <span>التنبيهات</span>
                 </button>
@@ -485,9 +587,9 @@
 
     <main class="container mx-auto px-3 lg:px-4 py-4 flex-grow space-y-4">
 
-        <!-- Top Layout Container -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-3 items-start">
-            <div id="statsGridWrapper" class="lg:col-span-3">
+        <!-- Dashboard: totals first, compact adjacent charts underneath -->
+        <div id="dashboardTopLayout" class="flex flex-col gap-3 items-stretch">
+            <div id="statsGridWrapper" class="w-full">
                 <div id="statsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
                     <div id="cardBox1" class="glass-panel px-3 py-2.5 rounded-xl border border-sky-500/20 flex items-center justify-between">
                         <div>
@@ -516,6 +618,7 @@
                         <div id="statCard3Icon" class="bg-blue-500/10 p-1.5 rounded-lg text-blue-400 text-xs"><i class="fa-solid fa-car"></i></div>
                     </div>
 
+                    <div id="carMiniChart" class="hidden col-span-full glass-panel rounded-xl p-3 border border-blue-500/20"><h4 class="text-xs font-bold text-sky-300 mb-2">السيارات حسب العمارة</h4><div id="carMiniBars" class="flex gap-3 items-end overflow-x-auto min-h-24"></div></div>
                     <div id="cardBox4" class="glass-panel px-3 py-2.5 rounded-xl border border-teal-500/20 flex items-center justify-between">
                         <div>
                             <h2 id="statCard4Title" class="text-[11px] font-bold text-teal-400 leading-tight">العقود السارية</h2>
@@ -593,7 +696,7 @@
             </div>
 
             <!-- Rental analytics charts -->
-            <div id="chartsColumnContainer" class="lg:col-span-1 flex flex-col gap-3">
+            <div id="chartsColumnContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 items-start">
                 <div id="chartSectionContainer" class="hidden glass-panel p-2 rounded-xl border border-slate-700/60 shadow-md">
                     <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-slate-800">
                         <h3 class="text-[11px] font-bold text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-chart-pie"></i> المستأجرة حسب النوع</h3>
@@ -610,6 +713,14 @@
                         <canvas id="apartmentsBuildingChart"></canvas>
                     </div>
                 </div>
+                <section id="dashboardCarsPanel" class="hidden glass-panel p-2 rounded-xl border border-blue-500/30 shadow-md">
+                    <h3 class="text-[11px] font-bold text-sky-300 mb-2"><i class="fa-solid fa-car ml-1"></i> السيارات حسب العمارة</h3>
+                    <div id="dashboardCarsBars" class="space-y-1.5"></div>
+                </section>
+                <section id="dashboardResidentsPanel" class="hidden glass-panel p-2 rounded-xl border border-emerald-500/30 shadow-md">
+                    <h3 class="text-[11px] font-bold text-emerald-300 mb-2"><i class="fa-solid fa-users ml-1"></i> الساكنين حسب العمارات</h3>
+                    <div id="dashboardResidentsBars" class="space-y-1.5"></div>
+                </section>
             </div>
         </div>
 
@@ -965,6 +1076,7 @@
                     </div>
                 </div>
 
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700 space-y-2"><h4 class="font-bold text-amber-300 text-sm">إخفاء العمارات حسب المستخدم</h4><p class="text-xs text-slate-400">اختر الحساب وحدد العمارات التي لا تريد إظهارها له.</p><select id="buildingPermissionUser" onchange="renderBuildingPermissionChoices()" class="w-full bg-slate-900 p-2 rounded-lg text-white text-sm"><option value="maintenance">الصيانة</option><option value="services">الخدمات</option><option value="morning">الشفت الصباحي</option><option value="evening">الشفت المسائي</option><option value="night">الشفت الليلي</option></select><div id="buildingPermissionChoices" class="flex flex-wrap gap-3 text-sm"></div><button type="button" onclick="saveBuildingPermissionChoices()" class="bg-amber-600 px-3 py-2 rounded-lg text-white text-xs font-bold">حفظ العمارات المخفية لهذا المستخدم</button></div>
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeModal('adminSettingsModal')" class="bg-slate-800 text-slate-300 px-4 py-2.5 rounded-xl text-xs font-semibold">إلغاء</button>
                     <button type="button" onclick="saveAdminSettingsChanges()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-xs font-bold">حفظ واعتماد التغييرات</button>
@@ -1431,6 +1543,7 @@
                 if (config) {
                     systemConfig = config;
                     applySystemThemeAndFont();
+                    if(currentRole) filterData();
                 }
             });
         });
@@ -1582,6 +1695,7 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('newPassEvening').value = systemConfig.passwords?.evening || '';
             document.getElementById('newPassNight').value = systemConfig.passwords?.night || '';
 
+            renderBuildingPermissionChoices();
             document.getElementById('adminSettingsModal').classList.remove('hidden');
         }
 
@@ -1963,7 +2077,7 @@ db.ref('units').once('value', (snapshot) => {
             const rentedTypesCount = { A: 0, B: 0, C: 0, S: 0 };
             const rentedBuildingsCount = {};
 
-            unitsData.forEach(item => {
+            royalVisibleUnits().forEach(item => {
                 if (item.ownerIsResident) totalResidents += 1;
                 
                 if (item.tenant && String(item.tenant).trim()) {
@@ -2014,6 +2128,7 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('statExpiredLeases').innerText = expiredLeasesCount;
             document.getElementById('statUpcomingLeases').innerText = upcomingLeasesCount;
 
+            royalRenderDashboards();
             renderApartmentsChart(rentedTypesCount);
             renderApartmentsByBuildingChart(rentedBuildingsCount);
 
@@ -2195,6 +2310,7 @@ db.ref('units').once('value', (snapshot) => {
             appBody.classList.toggle('compact-stat-cards', role === 'maintenance' || isShiftAccount);
             appBody.classList.toggle('role-maintenance', role === 'maintenance');
             appBody.classList.toggle('role-services', role === 'services');
+            appBody.classList.toggle('role-admin', role === 'admin');
             appBody.classList.toggle('role-shift', isShiftAccount);
             renderRentalFinanceTotals();
 
@@ -2317,7 +2433,7 @@ db.ref('units').once('value', (snapshot) => {
             const contractFilterEl = document.getElementById('filterContractStatus');
             const contractFilter = (currentRole !== 'viewer' && contractFilterEl) ? contractFilterEl.value : 'all';
 
-            const filtered = unitsData.filter(item => {
+            const filtered = royalVisibleUnits().filter(item => {
                 const b = String(item.building || '').toLowerCase();
                 const type = String(item.apartmentType || '').toLowerCase();
                 const f = String(item.floor || '').toLowerCase();
@@ -2495,6 +2611,7 @@ db.ref('units').once('value', (snapshot) => {
             tbody.innerHTML = '';
             const canEdit = hasFullPermission();
 
+            data = (data || []).filter(royalCanSeeUnit);
             if (!data || data.length === 0) {
                 let colSpanCount = canEdit ? 5 : 4;
                 tbody.innerHTML = `<tr><td colspan="${colSpanCount}" class="text-center py-8 text-slate-500 text-base">لا توجد سجلات مطابقة لعملية البحث.</td></tr>`;
@@ -2877,6 +2994,8 @@ db.ref('units').once('value', (snapshot) => {
         }
 
         function openDetailModal(id) {
+            const targetUnit = unitsData.find(u => String(u.id)===String(id));
+            if (!targetUnit || !royalCanSeeUnit(targetUnit)) return;
             const item = unitsData.find(u => u.id === id);
             if (!item) return;
 
@@ -3042,8 +3161,8 @@ db.ref('units').once('value', (snapshot) => {
         }
 
         function exportToExcelFull() {
-            if (!unitsData || unitsData.length === 0) { alert("لا توجد بيانات لتصديرها!"); return; }
-            const exportList = unitsData.map(u => ({
+            if (!royalVisibleUnits().length) { alert("لا توجد بيانات لتصديرها!"); return; }
+            const exportList = royalVisibleUnits().map(u => ({
                 "العمارة": u.building,
                 "نوع الشقة": u.apartmentType || 'A1',
                 "الطابق": u.floor,
@@ -3209,6 +3328,82 @@ db.ref('units').once('value', (snapshot) => {
                 switchRole('viewer', SHIFT_PASSWORDS[sKey].name, sKey);
             } else { document.getElementById('viewerPasswordError').classList.remove('hidden'); }
         }
-    </script>
+    
+// Royal City additional dashboards and director reports (2026-11-04)
+const royalBuildingColors=['#38bdf8','#34d399','#fbbf24','#a78bfa','#fb7185','#22d3ee','#f97316','#c084fc','#84cc16'];
+function royalBuildings(){return [...new Set(unitsData.map(u=>String(u.building||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));}
+function royalCanSeeUnit(u){return currentRole==='admin'||!(systemConfig.hiddenBuildings?.[currentUserKey]||[]).includes(String(u.building||'').trim());}
+function royalVisibleUnits(){return unitsData.filter(royalCanSeeUnit);}
+function royalCarList(u){return [...(Array.isArray(u.ownerCars)?u.ownerCars:[]),...(u.tenant&&!u.isCanceled&&Array.isArray(u.tenantCars)?u.tenantCars:[])];}
+function royalResidentsCount(u){return Number(!!u.ownerIsResident)+Number(!!(u.tenant&&u.tenantIsResident));}
+function royalEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function royalBars(container, counts, horizontal=true){const el=document.getElementById(container);if(!el)return;const names=Object.keys(counts).sort((a,b)=>a.localeCompare(b,'en',{numeric:true}));const max=Math.max(1,...Object.values(counts));el.innerHTML=names.length?names.map((name,i)=>{const n=counts[name],color=royalBuildingColors[royalBuildings().indexOf(name)%royalBuildingColors.length];return horizontal?`<div class="flex items-center gap-2"><span class="w-8 shrink-0 text-xs font-bold">${royalEsc(name)}</span><div class="bg-slate-700/70 rounded h-4 flex-1 overflow-hidden"><div style="width:${n/max*100}%;background:${color}" class="h-full rounded"></div></div><strong class="text-sm w-8 text-center">${n}</strong></div>`:`<div class="flex flex-col items-center min-w-12"><strong class="text-xs">${n}</strong><div class="w-7 h-20 flex items-end"><div style="height:${n/max*100}%;background:${color}" class="w-full rounded-t"></div></div><span class="text-xs">${royalEsc(name)}</span></div>`}).join(''):'<p class="text-xs text-slate-400">لا توجد بيانات</p>';}
+function royalRenderDashboards(){
+    if(!currentRole)return;
+    const isAdmin=currentRole==='admin';
+    const isShift=currentRole==='viewer'&&['morning','evening','night'].includes(currentUserKey);
+    const isMaintenance=currentRole==='maintenance';
+    const isServices=currentRole==='services';
+    const carsPanel=document.getElementById('dashboardCarsPanel');
+    const residentsPanel=document.getElementById('dashboardResidentsPanel');
+    carsPanel.classList.toggle('hidden',!(isAdmin||isShift));
+    residentsPanel.classList.toggle('hidden',!(isAdmin||isShift||isMaintenance||isServices));
+    // The older charts were separate from the totals. Keep them available only where relevant.
+    document.getElementById('carMiniChart').classList.add('hidden');
+    document.getElementById('shiftChartsPanel')?.classList.add('hidden');
+    const chartGrid=document.getElementById('chartsColumnContainer');
+    chartGrid.classList.toggle('xl:grid-cols-4',isAdmin);
+    chartGrid.classList.toggle('xl:grid-cols-2',!isAdmin);
+    const cars={},residents={};
+    royalVisibleUnits().forEach(u=>{
+        const b=String(u.building||'غير محدد').trim();
+        cars[b]=(cars[b]||0)+royalCarList(u).length;
+        residents[b]=(residents[b]||0)+royalResidentsCount(u);
+    });
+    if(isAdmin||isShift)royalBars('dashboardCarsBars',cars);
+    if(isAdmin||isShift||isMaintenance||isServices)royalBars('dashboardResidentsBars',residents);
+}
+
+function renderBuildingPermissionChoices(){if(currentRole!=='admin')return;const user=document.getElementById('buildingPermissionUser').value,hidden=systemConfig.hiddenBuildings?.[user]||[];document.getElementById('buildingPermissionChoices').innerHTML=royalBuildings().map(b=>`<label class="flex items-center gap-1"><input type="checkbox" class="royalHiddenBuildingCheck" value="${royalEsc(b)}" ${hidden.includes(b)?'checked':''}>إخفاء ${royalEsc(b)}</label>`).join('')||'لا توجد عمارات';}
+function saveBuildingPermissionChoices(){if(currentRole!=='admin')return;const user=document.getElementById('buildingPermissionUser').value;systemConfig.hiddenBuildings=systemConfig.hiddenBuildings||{};systemConfig.hiddenBuildings[user]=[...document.querySelectorAll('.royalHiddenBuildingCheck:checked')].map(x=>x.value);db.ref('systemConfig/hiddenBuildings/'+user).set(systemConfig.hiddenBuildings[user]).then(()=>alert('تم حفظ صلاحيات العمارات')).catch(()=>alert('تعذّر حفظ صلاحيات العمارات في قاعدة البيانات'));}
+let royalReportRows=[];
+function openComprehensiveReports(){if(currentRole!=='admin'||currentUserKey!=='admin')return;const select=document.getElementById('royalReportBuilding');select.innerHTML='<option value="">كل العمارات</option>'+royalBuildings().map(b=>`<option value="${royalEsc(b)}">${royalEsc(b)}</option>`).join('');document.getElementById('comprehensiveReportsModal').classList.remove('hidden');renderComprehensiveReport();}
+function royalCarDetails(c){return [c.type||c.carType||c.brand||c.make||'',c.color||c.carColor||'',c.number||c.carNum||c.plate||c.plateNumber||c.carNumber||'',c.barcode||c.barCode||c.qrCode||c.code||''].filter(Boolean).join(' / ');}
+function renderComprehensiveReport(){if(currentRole!=='admin'||currentUserKey!=='admin')return;const type=document.getElementById('royalReportType').value,b=document.getElementById('royalReportBuilding').value,search=document.getElementById('royalReportSearch').value.trim().toLowerCase(),n=document.getElementById('royalReportCarCount').value;const today=localDateISO(),end=new Date(today+'T00:00:00');end.setDate(end.getDate()+30);const endStr=localDateISO(end);const rows=[];
+const add=(u,category,name,phone,detail,extra='')=>rows.push({'العمارة':u.building,'الطابق':u.floor,'الشقة':u.apartment,'التصنيف':category,'الاسم':name||'','الهاتف':Array.isArray(phone)?phone.filter(Boolean).join('، '):phone||'','التفاصيل':detail||'','معلومات إضافية':extra||''});
+unitsData.filter(u=>!b||u.building===b).forEach(u=>{const cars=royalCarList(u),contact=[u.owner,u.tenant].filter(Boolean).join(' / '),phones=[...(u.ownerPhones||[]),...(u.tenantPhones||[])];switch(type){
+case 'cars':cars.forEach((c,i)=>add(u,'سيارة',i<(u.ownerCars||[]).length?u.owner:u.tenant,i<(u.ownerCars||[]).length?u.ownerPhones:u.tenantPhones,royalCarDetails(c)));break;
+case 'carcount':if(n==='all'||(n==='4+'?cars.length>=4:cars.length===Number(n)))add(u,'عدد السيارات: '+cars.length,contact,phones,cars.map(royalCarDetails).join(' | ')||'لا توجد سيارات');break;
+case 'tenants':if(u.tenant&&!u.isCanceled)add(u,'مستأجر حالي',u.tenant,u.tenantPhones,'انتهاء العقد: '+(u.leaseEnd||'-'));break;
+case 'expired':if(u.tenant&&!u.isCanceled&&u.leaseEnd&&u.leaseEnd<today)add(u,'عقد منتهي',u.tenant,u.tenantPhones,u.leaseEnd);break;
+case 'upcoming':if(u.tenant&&!u.isCanceled&&u.leaseEnd&&u.leaseEnd>=today&&u.leaseEnd<=endStr)add(u,'ينتهي خلال شهر',u.tenant,u.tenantPhones,u.leaseEnd);break;
+case 'canceled':if(u.isCanceled)add(u,'عقد مفسوخ',u.tenant,u.tenantPhones,u.leaseEnd);(u.archiveCanceledTenants||[]).forEach(t=>add(u,'مستأجر سابق',t.tenant,t.phones,t.contractNo));break;
+case 'owners':add(u,'مالك',u.owner,u.ownerPhones,u.ownerIsResident?'مقيم':'غير مقيم');break;
+case 'units':add(u,'وحدة',contact,phones,'نوع الشقة: '+(u.apartmentType||''));break;
+case 'maintenance':add(u,'صيانة',u.owner,u.ownerPhones,getMaintenanceStatusInfo(u.handoverDate).mainText,'الاستلام: '+(u.handoverDate||'-'));break;
+case 'auth':for(const [arr,label] of [[u.ownerAuth,'مخول المالك'],[u.tenantAuth,'مخول المستأجر']]) (arr||[]).forEach(a=>add(u,label,a.name,a.phone,[a.type,a.carType,a.carColor,a.carNum,a.expiryDate].filter(Boolean).join(' / ')));break;
+case 'finance':add(u,'مالية',contact,phones,'عمولة المالك: '+(u.ownerCommission||0)+' | عمولة المستأجر: '+(u.tenantCommission||0),'التأمين: '+(u.tenantDeposit||0));break;
+}});
+royalReportRows=rows.filter(r=>!search||Object.values(r).join(' ').toLowerCase().includes(search));document.getElementById('royalReportCount').textContent='عدد النتائج: '+royalReportRows.length;const keys=['العمارة','الطابق','الشقة','التصنيف','الاسم','الهاتف','التفاصيل','معلومات إضافية'];document.getElementById('royalReportTable').innerHTML='<thead class="sticky top-0 bg-indigo-950"><tr>'+keys.map(k=>'<th class="p-2 border border-slate-700 whitespace-nowrap">'+k+'</th>').join('')+'</tr></thead><tbody>'+royalReportRows.map(r=>'<tr>'+keys.map(k=>'<td class="p-2 border border-slate-700 whitespace-nowrap">'+royalEsc(r[k])+'</td>').join('')+'</tr>').join('')+'</tbody>';}
+function exportComprehensiveReport(){if(currentRole!=='admin'||currentUserKey!=='admin')return;if(!royalReportRows.length)return alert('لا توجد نتائج');const ws=XLSX.utils.json_to_sheet(royalReportRows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'التقرير');XLSX.writeFile(wb,'RoyalCity_Report_'+localDateISO()+'.xlsx');}
+function printComprehensiveReport(){if(currentRole!=='admin'||currentUserKey!=='admin')return;const w=window.open('','_blank');if(!w)return alert('يرجى السماح بالنوافذ المنبثقة');w.document.write('<!doctype html><html lang="ar" dir="rtl"><meta charset="utf-8"><title>تقرير رويال ستي</title><style>body{font-family:Arial}table{border-collapse:collapse;width:100%;font-size:11px}td,th{border:1px solid #777;padding:5px;text-align:right}</style><h2>مجمع رويال ستي — التقارير الشاملة</h2>'+document.getElementById('royalReportTable').outerHTML+'</html>');w.document.close();w.focus();w.print();}
+window.addEventListener('scroll',()=>document.getElementById('backToTopRoyal')?.classList.toggle('hidden',window.scrollY<250),{passive:true});
+
+</script>
+
+<button id="backToTopRoyal" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="العودة لأعلى الصفحة" aria-label="العودة لأعلى الصفحة" class="fixed bottom-5 left-5 z-40 bg-blue-600 hover:bg-blue-500 text-white rounded-full w-11 h-11 shadow-xl hidden"><i class="fa-solid fa-arrow-up"></i></button>
+<div id="comprehensiveReportsModal" class="fixed inset-0 z-50 bg-black/85 hidden overflow-y-auto p-3 sm:p-6" dir="rtl">
+ <div class="bg-slate-900 border border-indigo-500/40 rounded-2xl max-w-7xl mx-auto p-4 sm:p-6 text-white space-y-4">
+ <div class="flex items-center justify-between"><h2 class="text-xl font-black text-indigo-300">التقارير الشاملة — المدير محمد العبيدي</h2><button onclick="closeModal('comprehensiveReportsModal')" class="bg-slate-700 px-3 py-2 rounded-lg">إغلاق ×</button></div>
+ <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+ <label>نوع التقرير<select id="royalReportType" onchange="renderComprehensiveReport()" class="w-full bg-slate-800 p-2 rounded"><option value="cars">السيارات</option><option value="carcount">الشقق حسب عدد السيارات</option><option value="tenants">المستأجرون الحاليون</option><option value="expired">العقود المنتهية</option><option value="upcoming">العقود المنتهية خلال شهر</option><option value="canceled">العقود المفسوخة</option><option value="owners">المالكون</option><option value="units">الوحدات السكنية</option><option value="maintenance">حالة الصيانة</option><option value="auth">المخولون بالدخول</option><option value="finance">الحسابات المالية</option></select></label>
+ <label>العمارة<select id="royalReportBuilding" onchange="renderComprehensiveReport()" class="w-full bg-slate-800 p-2 rounded"><option value="">كل العمارات</option></select></label>
+ <label>عدد السيارات بالشقة<select id="royalReportCarCount" onchange="renderComprehensiveReport()" class="w-full bg-slate-800 p-2 rounded"><option value="2">سيارتان</option><option value="0">بدون سيارات</option><option value="1">سيارة واحدة</option><option value="3">3 سيارات</option><option value="4+">4 سيارات فأكثر</option><option value="all">الكل</option></select></label>
+ <label>بحث بالاسم أو الشقة أو الطابق<input id="royalReportSearch" oninput="renderComprehensiveReport()" class="w-full bg-slate-800 p-2 rounded" placeholder="بحث..."></label>
+ </div>
+ <div class="flex flex-wrap gap-2 items-center"><strong id="royalReportCount" class="text-emerald-300 ml-auto"></strong><button onclick="exportComprehensiveReport()" class="bg-emerald-700 px-4 py-2 rounded">تصدير Excel</button><button onclick="printComprehensiveReport()" class="bg-blue-700 px-4 py-2 rounded">طباعة / PDF</button></div>
+ <div class="overflow-auto max-h-[65vh] border border-slate-700 rounded-lg"><table id="royalReportTable" class="w-full text-xs text-right border-collapse"></table></div>
+ </div>
+</div>
 </body>
 </html>
