@@ -64,6 +64,21 @@
         body.theme-copper .glass-panel { background: rgba(154, 52, 18, .72); border-color: rgba(251, 146, 60, .3); }
         body.theme-copper header { background-color: #7c2d12 !important; }
 
+        /* الثيم الذهبي: تباين واضح مع النصوص الداكنة */
+        body.theme-gold { background:#f5e7bd; color:#272114; }
+        body.theme-gold .glass-panel { background:rgba(255,249,229,.97);border-color:#c49a38;box-shadow:0 3px 12px rgba(80,56,13,.1); }
+        body.theme-gold header { background:#ead19a!important; border-color:#b88a27!important; }
+        body.theme-gold main .text-white, body.theme-gold header .text-white, body.theme-gold #adminSettingsModal .text-white {color:#272114!important;}
+        body.theme-gold .text-slate-100,body.theme-gold .text-slate-200,body.theme-gold .text-slate-300,body.theme-gold .text-slate-400 {color:#514225!important;}
+        body.theme-gold [class~="bg-slate-900"],body.theme-gold [class~="bg-slate-800"],body.theme-gold [class~="bg-slate-800/50"],body.theme-gold [class~="bg-slate-700"] {background-color:#f3e5be!important;}
+        body.theme-gold input:not([type="checkbox"]):not([type="radio"]),body.theme-gold select,body.theme-gold textarea {background:#fffaf0!important;color:#272114!important;border-color:#b99649!important;}
+        body.theme-gold .text-emerald-400 {color:#086447!important;}
+        body.theme-gold .text-sky-300,body.theme-gold .text-sky-400,body.theme-gold .text-blue-400 {color:#184a8a!important;}
+        body.theme-gold .text-amber-300,body.theme-gold .text-amber-400 {color:#805200!important;}
+        body.theme-gold .text-rose-300,body.theme-gold .text-rose-400 {color:#a51f36!important;}
+        body.theme-gold .text-orange-300 {color:#a2460a!important;}
+        body.theme-gold table {color:#272114;}
+
         /* الثيم الأبيض: خلفية فاتحة مع نصوص داكنة وواضحة */
         body.theme-light { background-color: #f8fafc; color: #1f2937; }
         body.theme-light .glass-panel { background: rgba(255,255,255,.96); border-color: #dbe3ee; box-shadow: 0 4px 18px rgba(15,23,42,.06); }
@@ -478,6 +493,10 @@
 </style>
 <style id="royalEqualCharts20261104">
 /* Unified chart dimensions and vertical alignment for director, services, maintenance. */
+#appBody.role-admin #chartsColumnContainer > :is(div,section) {border:1px solid rgba(148,163,184,.3)!important;border-radius:13px!important;box-shadow:0 3px 12px rgba(0,0,0,.12)!important;}
+#appBody.role-admin #chartsColumnContainer > :is(div,section) h3 {font-family:Cairo,sans-serif!important;font-weight:800!important;font-size:12px!important;line-height:1.45!important;}
+#appBody.role-admin #chartsColumnContainer > :is(div,section) h3 i {color:#d4af37!important;}
+
 #appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer {
   align-items:stretch!important;
   gap:8px!important;
@@ -667,7 +686,7 @@
                             <h2 class="text-[10px] font-black text-orange-300 leading-tight">عقود تنتهي خلال شهر</h2>
                             <h3 id="statUpcomingLeases" class="text-base lg:text-lg font-black text-white mt-0.5">0</h3>
                         </div>
-                        <div class="bg-orange-500/10 p-1.5 rounded-lg text-orange-300 text-xs"><i class="fa-solid fa-calendar-clock"></i></div>
+                        <div class="bg-orange-500/10 p-1.5 rounded-lg text-orange-300 text-xs" aria-label="أيقونة العقود التي تنتهي خلال شهر"><i class="fa-solid fa-calendar-days"></i></div>
                     </div>
         <!-- Financial totals are part of the same top statistics grid and use editable values -->
         <section id="rentalFinanceSummary" class="hidden contents">
@@ -699,7 +718,7 @@
             <div id="chartsColumnContainer" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 items-start">
                 <div id="chartSectionContainer" class="hidden glass-panel p-2 rounded-xl border border-slate-700/60 shadow-md">
                     <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-slate-800">
-                        <h3 class="text-[11px] font-bold text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-chart-pie"></i> المستأجرة حسب النوع</h3>
+                        <h3 class="text-[11px] font-bold text-sky-300 flex items-center gap-1"><i class="fa-solid fa-chart-pie"></i> المستأجرة حسب النوع</h3>
                     </div>
                     <div class="w-full h-[105px] relative">
                         <canvas id="apartmentsTypeChart"></canvas>
@@ -707,7 +726,7 @@
                 </div>
                 <div id="buildingChartSectionContainer" class="hidden glass-panel p-2 rounded-xl border border-slate-700/60 shadow-md">
                     <div class="flex justify-between items-center mb-1.5 pb-1 border-b border-slate-800">
-                        <h3 class="text-[11px] font-bold text-sky-400 flex items-center gap-1"><i class="fa-solid fa-chart-column"></i> المستأجرة حسب العمارة</h3>
+                        <h3 class="text-[11px] font-bold text-sky-300 flex items-center gap-1"><i class="fa-solid fa-chart-column"></i> المستأجرة حسب العمارة</h3>
                     </div>
                     <div class="w-full h-[105px] relative">
                         <canvas id="apartmentsBuildingChart"></canvas>
@@ -718,7 +737,7 @@
                     <div id="dashboardCarsBars" class="space-y-1.5"></div>
                 </section>
                 <section id="dashboardResidentsPanel" class="hidden glass-panel p-2 rounded-xl border border-emerald-500/30 shadow-md">
-                    <h3 class="text-[11px] font-bold text-emerald-300 mb-2"><i class="fa-solid fa-users ml-1"></i> الساكنين حسب العمارات</h3>
+                    <h3 class="text-[11px] font-bold text-sky-300 mb-2"><i class="fa-solid fa-users ml-1"></i> الساكنين حسب العمارات</h3>
                     <div id="dashboardResidentsBars" class="space-y-1.5"></div>
                 </section>
             </div>
@@ -1001,6 +1020,7 @@
                                 <option value="theme-slate">الرمادي العصري</option>
                                 <option value="theme-copper">النحاسي الدافئ</option>
                                 <option value="theme-light">الأبيض المريح (معلومات داكنة)</option>
+                                <option value="theme-gold">الذهبي الملكي (خطوط داكنة)</option>
                             </select>
                         </div>
                         <div>
@@ -1264,6 +1284,13 @@
                         </div>
                     </div>
 
+                    <div class="rounded-lg border border-emerald-500/25 p-3 bg-emerald-950/10">
+                        <label for="addRentPaymentInterval" class="text-xs text-emerald-300 font-bold block mb-1">آلية دفع الإيجار (معلومة فقط)</label>
+                        <select id="addRentPaymentInterval" onchange="document.getElementById('addRentPaymentCustomWrapper').classList.toggle('hidden',this.value!=='custom')" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
+                            <option value="">غير محدد</option><option value="1">كل شهر</option><option value="2">كل شهرين</option><option value="3">كل 3 أشهر</option><option value="6">كل 6 أشهر</option><option value="12">سنوي</option><option value="custom">مدة مخصصة</option>
+                        </select>
+                        <div id="addRentPaymentCustomWrapper" class="hidden mt-2"><label for="addRentPaymentCustomMonths" class="text-xs text-slate-300 block mb-1">عدد الأشهر</label><input type="number" id="addRentPaymentCustomMonths" min="1" max="120" step="1" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white" placeholder="عدد الأشهر"></div>
+                    </div>
                     <div id="tenantFinanceFields" class="hidden grid grid-cols-1 md:grid-cols-2 gap-3 bg-emerald-950/20 p-3 rounded-lg border border-emerald-500/20">
                         <div><label class="text-xs text-emerald-300 block mb-1">عمولة المستأجر (د.ع)</label><input type="text" id="addTenantCommission" oninput="formatCurrencyInput(this)" placeholder="مبلغ عمولة المستأجر" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
                         <div><label class="text-xs text-amber-300 block mb-1">التأمينات المستلمة من المستأجر (د.ع)</label><input type="text" id="addTenantDeposit" oninput="formatCurrencyInput(this)" placeholder="مبلغ التأمينات أو اكتب تعهد في الملاحظات" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white"></div>
@@ -1661,7 +1688,7 @@ db.ref('units').once('value', (snapshot) => {
                 applySystemThemeAndFont();
                 return;
             }
-            const allowedThemes = ['theme-dark', 'theme-royal', 'theme-emerald', 'theme-ocean', 'theme-purple', 'theme-burgundy', 'theme-slate', 'theme-copper', 'theme-light'];
+            const allowedThemes = ['theme-dark', 'theme-royal', 'theme-emerald', 'theme-ocean', 'theme-purple', 'theme-burgundy', 'theme-slate', 'theme-copper', 'theme-light', 'theme-gold'];
             if (!allowedThemes.includes(themeName)) return;
             systemConfig.theme = themeName;
             applySystemThemeAndFont();
@@ -2700,6 +2727,7 @@ db.ref('units').once('value', (snapshot) => {
                             <span class="text-white font-extrabold text-base"><i class="fa-solid fa-user text-emerald-400 ml-1"></i>${highlightText(item.tenant, queries.qName)} ${item.tenantIsResident ? '<span class="text-xs text-teal-300 font-normal">[مقيم]</span>' : ''}</span>
                             ${tenantPhonesStr ? `<div class="text-emerald-300 font-mono text-sm font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(tenantPhonesStr, queries.qPhone)}</div>` : ''}
                             ${leaseInfo}
+                            ${(canViewRentPayment() && rentPaymentLabel(item.rentPaymentIntervalMonths)) ? `<div class="text-xs text-emerald-300 font-bold">آلية دفع الإيجار: ${esc(rentPaymentLabel(item.rentPaymentIntervalMonths))}</div>` : ''}
                             ${(canViewRentalFinance() && item.tenantCommission !== undefined && item.tenantCommission !== '') ? `<div class="text-xs text-emerald-300 font-bold bg-emerald-950/30 border border-emerald-500/20 rounded-lg px-2 py-1 w-fit">عمولة المستأجر: ${esc(displayFinanceAmount(item.tenantCommission))}</div>` : ''}
                             ${(canViewRentalFinance() && item.tenantDeposit !== undefined && item.tenantDeposit !== '') ? `<div class="text-xs text-amber-300 font-bold bg-amber-950/30 border border-amber-500/20 rounded-lg px-2 py-1 w-fit">التأمينات: ${esc(displayFinanceAmount(item.tenantDeposit))}</div>` : ''}
                             ${tenantDetailsHtml}
@@ -2811,7 +2839,8 @@ db.ref('units').once('value', (snapshot) => {
                     rentUSD: document.getElementById('addRentUSD').value,
                     ownerCommission: document.getElementById('addOwnerCommission').value.replace(/[^0-9]/g, ''),
                     tenantCommission: document.getElementById('addTenantCommission').value.replace(/[^0-9]/g, ''),
-                    tenantDeposit: document.getElementById('addTenantDeposit').value.trim(),
+                    rentPaymentIntervalMonths: getRentPaymentIntervalMonths(),
+                tenantDeposit: document.getElementById('addTenantDeposit').value.trim(),
                     tenantCars: (() => {
                         const currentUnit = unitsData.find(u => u.id === Number(document.getElementById('editUnitId').value));
                         return (currentUnit?.tenantCars || []).map(car => ({ ...car }));
@@ -2836,6 +2865,7 @@ db.ref('units').once('value', (snapshot) => {
                         item.ownerCommission = '';
                         item.tenantCommission = '';
                         item.tenantDeposit = '';
+                        item.rentPaymentIntervalMonths = '';
                     }
                 }
 
@@ -2848,9 +2878,25 @@ db.ref('units').once('value', (snapshot) => {
                 document.getElementById('addRentUSD').value = '';
                 document.getElementById('addTenantCommission').value = '';
                 document.getElementById('addTenantDeposit').value = '';
+                document.getElementById('addRentPaymentInterval').value = '';
+                document.getElementById('addRentPaymentCustomMonths').value = '';
+                document.getElementById('addRentPaymentCustomWrapper').classList.add('hidden');
                 alert("تمت أرشفة العقد بنجاح، وتم تصفير عمولة المالك وعمولة المستأجر والتأمينات مع الاحتفاظ بجميع المبالغ ضمن الإجماليات المؤرشفة.");
             }
         }
+
+        function getRentPaymentIntervalMonths() {
+            const select = document.getElementById('addRentPaymentInterval');
+            const value = select.value === 'custom' ? document.getElementById('addRentPaymentCustomMonths').value : select.value;
+            const months = Number(value);
+            return value !== '' && Number.isInteger(months) && months >= 1 && months <= 120 ? months : '';
+        }
+        function rentPaymentLabel(months) {
+            const n = Number(months);
+            if (!Number.isInteger(n) || n < 1) return '';
+            return ({1:'كل شهر',2:'كل شهرين',3:'كل 3 أشهر',6:'كل 6 أشهر',12:'سنوي'})[n] || `كل ${n} أشهر`;
+        }
+        function canViewRentPayment() { return currentRole === 'admin' || currentRole === 'services'; }
 
         function openFormModal(editData = null) {
             if (!hasFullPermission()) return;
@@ -2885,6 +2931,10 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('addRentIQD').value = editData ? editData.rentIQD || '' : '';
             document.getElementById('addRentUSD').value = editData ? editData.rentUSD || '' : '';
             document.getElementById('addTenantCommission').value = editData ? editData.tenantCommission || '' : '';
+            const paymentMonths = editData?.rentPaymentIntervalMonths == null ? '' : String(editData.rentPaymentIntervalMonths);
+            document.getElementById('addRentPaymentInterval').value = ['','1','2','3','6','12'].includes(paymentMonths) ? paymentMonths : 'custom';
+            document.getElementById('addRentPaymentCustomMonths').value = paymentMonths && !['1','2','3','6','12'].includes(paymentMonths) ? paymentMonths : '';
+            document.getElementById('addRentPaymentCustomWrapper').classList.toggle('hidden',document.getElementById('addRentPaymentInterval').value !== 'custom');
             document.getElementById('addTenantDeposit').value = editData ? (editData.tenantDeposit ? parseFinanceNumber(editData.tenantDeposit).toLocaleString('en-US') : '') : '';
 
             document.getElementById('addNotes').value = editData ? editData.notes : '';
@@ -2958,6 +3008,7 @@ db.ref('units').once('value', (snapshot) => {
                 rentIQD: document.getElementById('addRentIQD').value,
                 rentUSD: document.getElementById('addRentUSD').value,
                 tenantCommission: document.getElementById('addTenantCommission').value.replace(/[^0-9]/g, ''),
+                rentPaymentIntervalMonths: getRentPaymentIntervalMonths(),
                 tenantDeposit: document.getElementById('addTenantDeposit').value.trim(),
                 financeArchive: (editId && unitsData.find(u => u.id === Number(editId))?.financeArchive) || [],
                 tenantResidents: Array.from(document.querySelectorAll('#tenantResidentsContainer > div')).map(row => ({
@@ -3009,6 +3060,7 @@ db.ref('units').once('value', (snapshot) => {
                 </div>
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 space-y-2">
                     <h4 class="font-bold text-emerald-400 text-base">المستأجر الحالي: ${esc(item.tenant) || 'شاغرة'}</h4>
+                    ${(canViewRentPayment() && rentPaymentLabel(item.rentPaymentIntervalMonths)) ? `<p class="text-sm text-emerald-300 font-bold">آلية دفع الإيجار: ${esc(rentPaymentLabel(item.rentPaymentIntervalMonths))}</p>` : ''}
                     ${canViewRentalFinance() ? `<p class="text-sm text-emerald-300 font-bold">عمولة المستأجر: ${esc(displayFinanceAmount(item.tenantCommission))}</p><p class="text-sm text-amber-300 font-bold">التأمينات: ${esc(displayFinanceAmount(item.tenantDeposit))}</p>` : ''}
                     ${canViewRentalFinance() && (item.financeArchive||[]).length ? `<div class="mt-2 border-t border-slate-700 pt-2"><b class="text-amber-300">مبالغ العقود المؤرشفة</b>${(item.financeArchive||[]).map(a=>`<p class="text-xs text-slate-300">${esc(a.tenant||'مستأجر سابق')} — عمولة: ${Number(a.tenantCommission||0).toLocaleString('en-US')} د.ع — تأمينات: ${esc(displayFinanceAmount(a.tenantDepositLabel ?? a.tenantDeposit))}</p>`).join('')}</div>` : ''}
                 </div>
