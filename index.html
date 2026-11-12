@@ -532,6 +532,31 @@
   #appBody.role-maintenance #dashboardResidentsPanel {width:min(100%,310px)!important;}
 }
 </style>
+<style id="royalUnifiedCharts20261112">
+/* Original chart backgrounds restored: each chart uses its existing glass-panel and theme styles. */
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer > :is(div,section) h3 {font-size:12px!important;font-weight:800!important;color:#e2e8f0!important;}
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer > :is(div,section) h3 i {color:#d4af37!important;}
+</style>
+<style id="royalUniformChartBarThickness20261112">
+/* Match horizontal bar thickness (12px) across admin/services/maintenance dashboards.
+   Shift charts are intentionally excluded to preserve their established appearance. */
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardCarsBars .h-4,
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardResidentsBars .h-4 {
+    height:12px!important;
+    min-height:12px!important;
+    max-height:12px!important;
+}
+</style>
+<style id="royalUniformChartTypography20261112">
+/* Identical 12px labels and numbers in all upper dashboard charts, except shifts. */
+#appBody:is(.role-admin,.role-services,.role-maintenance) #chartsColumnContainer > :is(div,section) h3 {font-size:12px!important;line-height:1.5!important;font-weight:800!important;}
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardCarsBars > div > span,
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardResidentsBars > div > span,
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardCarsBars > div > strong,
+#appBody:is(.role-admin,.role-services,.role-maintenance) #dashboardResidentsBars > div > strong {
+ font-family:'Cairo',sans-serif!important;font-size:12px!important;line-height:1.5!important;font-weight:800!important;
+}
+</style>
 </head>
 <body class="min-h-screen flex flex-col justify-between theme-dark font-size-md" id="appBody">
 
@@ -737,7 +762,7 @@
                     <div id="dashboardCarsBars" class="space-y-1.5"></div>
                 </section>
                 <section id="dashboardResidentsPanel" class="hidden glass-panel p-2 rounded-xl border border-emerald-500/30 shadow-md">
-                    <h3 class="text-[11px] font-bold text-sky-300 mb-2"><i class="fa-solid fa-users ml-1"></i> الساكنين حسب العمارات</h3>
+                    <h3 class="text-[11px] font-bold text-sky-300 mb-2"><i class="fa-solid fa-users ml-1"></i> الساكنين حسب العمارة</h3>
                     <div id="dashboardResidentsBars" class="space-y-1.5"></div>
                 </section>
             </div>
@@ -778,6 +803,8 @@
                         <option id="optExpiredMaint" value="expired_maintenance">الوحدات السكنية المنتهية صيانتها</option>
                         <option id="optExpiredContract" value="expired">العقود المنتهية تاريخها فقط</option>
                         <option id="optCanceledContract" value="canceled">العقود المفسوخة فقط</option>
+                        <option value="rented_only">الشقق المستأجرة فقط</option>
+                        <option value="keys_received">الشقق المستلمة للمفاتيح فقط</option>
                     </select>
                 </div>
             </div>
@@ -1202,6 +1229,11 @@
                         </div>
                     </div>
 
+                    <div class="bg-slate-900/60 border border-amber-500/30 rounded-lg p-3 space-y-2">
+                        <div class="flex justify-between items-center gap-2"><strong class="text-xs text-amber-300">استلام مفاتيح الوحدة السكنية (دفعات مستقلة)</strong><button type="button" onclick="royalAddKeyRow()" class="text-xs text-emerald-300 border border-emerald-500/40 px-2 py-1 rounded">+ إضافة دفعة</button></div>
+                        <div id="royalKeyRows" class="space-y-2"></div>
+                        <div id="royalKeyTotalForm" class="text-xs text-amber-300">إجمالي المفاتيح: 0</div>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
                         <input type="text" id="addOwnerPhone1" placeholder="هاتف 1" class="bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
                         <input type="text" id="addOwnerPhone2" placeholder="هاتف 2" class="bg-slate-800 border border-slate-700 rounded-lg p-2 text-xs text-white">
@@ -1612,7 +1644,7 @@ db.ref('units').once('value', (snapshot) => {
                 const financeImportApplied = applyRentalFinanceImport(unitsData);
                 sortUnitsData();
                 localStorage.setItem('royal_units_cache', JSON.stringify(unitsData));
-                if (financeImportApplied || unitsData.length !== loadedUnits.length || unitsData.some((u, i) => { const old = loadedUnits.find(x => String(x.building||'').toUpperCase() === String(u.building||'').toUpperCase() && String(x.apartment||'') === String(u.apartment||'')); return old && (old.apartmentType !== u.apartmentType || String(old.floor) !== String(u.floor)); })) db.ref('units').set(unitsData);
+                // Never rewrite all units during initialization.
             } else {
                 if (!unitsData.length) unitsData = applyRoyalApartmentMap(defaultData);
                 else unitsData = applyRoyalApartmentMap(unitsData);
@@ -1626,8 +1658,9 @@ db.ref('units').once('value', (snapshot) => {
                 renderRentalFinanceTotals();
             }
             removeExpiredAuthorizations();
-            applyHandoverDatePatchV1();
-            applyLeaseDataPatchV1();
+            // Legacy one-time imports must not overwrite production records on page load.
+            // applyHandoverDatePatchV1();
+            // applyLeaseDataPatchV1();
             if (currentRole) {
                 filterData();
             }
@@ -1956,6 +1989,39 @@ db.ref('units').once('value', (snapshot) => {
             ).join('');
         }
 
+        // Royal City: key delivery records, independent of apartment handover date.
+        function royalKeyTotal(unit) { return (Array.isArray(unit?.keyDeliveries) ? unit.keyDeliveries : []).reduce((n, r) => n + Math.max(0, Number(r.count) || 0), 0); }
+        function royalKeySummary(unit) {
+            if (!['admin','services','maintenance'].includes(currentRole)) return '';
+            const entries = Array.isArray(unit.keyDeliveries) ? unit.keyDeliveries : [];
+            return `<div class="mt-2 bg-amber-950/20 border border-amber-500/30 rounded-lg p-2 text-xs space-y-1"><div class="font-bold text-amber-300">استلام مفاتيح الوحدة السكنية — ${royalKeyTotal(unit) ? 'مستلمة' : 'غير مستلمة'} (الإجمالي: ${royalKeyTotal(unit)})</div>${entries.map((r,i)=>`<div class="text-slate-200">${i+1}. ${esc(r.date || 'بدون تاريخ')} — ${Number(r.count)||0} مفتاح — ${esc(r.notes||'')}</div>`).join('')}</div>`;
+        }
+        function royalAddKeyRow(entry = {}) {
+            const root = document.getElementById('royalKeyRows');
+            const row = document.createElement('div');
+            row.className = 'royal-key-row grid grid-cols-1 md:grid-cols-4 gap-2 border border-slate-700 rounded-lg p-2';
+            row.innerHTML = `<label class="text-xs">تاريخ التسليم<input type="date" class="royal-key-date w-full bg-slate-800 rounded p-2" value="${esc(entry.date||'')}"></label><label class="text-xs">عدد المفاتيح<input type="number" min="1" step="1" class="royal-key-count w-full bg-slate-800 rounded p-2" value="${Number(entry.count)||1}" oninput="royalUpdateKeyTotal()"></label><label class="text-xs">ملاحظات<input type="text" class="royal-key-notes w-full bg-slate-800 rounded p-2" placeholder="اختياري"></label><button type="button" class="text-xs text-rose-300" onclick="this.closest('.royal-key-row').remove();royalUpdateKeyTotal()">حذف الدفعة</button>`;
+            row.querySelector('.royal-key-notes').value = entry.notes || '';
+            root.appendChild(row); royalUpdateKeyTotal();
+        }
+        function royalRenderKeyRows(rows) { document.getElementById('royalKeyRows').innerHTML = ''; (Array.isArray(rows)?rows:[]).forEach(royalAddKeyRow); royalUpdateKeyTotal(); }
+        function royalCollectKeyRows() { return [...document.querySelectorAll('#royalKeyRows .royal-key-row')].map(r=>({date:r.querySelector('.royal-key-date').value,count:Number(r.querySelector('.royal-key-count').value),notes:r.querySelector('.royal-key-notes').value.trim()})).filter(r=>r.date && Number.isInteger(r.count) && r.count>0); }
+        function royalUpdateKeyTotal() { const el=document.getElementById('royalKeyTotalForm'); if(el) el.textContent='إجمالي المفاتيح: '+royalCollectKeyRows().reduce((a,r)=>a+r.count,0); }
+        function royalUnitIndex(id) { return unitsData.findIndex(u=>Number(u.id)===Number(id)); }
+        async function royalSaveOneUnit(unit) {
+            const index = royalUnitIndex(unit.id);
+            if(index<0) throw new Error('تعذر تحديد سجل الشقة');
+            // Firebase transaction rejects a concurrent change instead of overwriting it.
+            const before = JSON.stringify(unit._royalPreviousSnapshot || null);
+            const target = {...unit}; delete target._royalPreviousSnapshot;
+            const result = await db.ref('units/'+index).transaction(current=>{
+                if(!current) return;
+                if(before!=='null' && JSON.stringify(current)!==before) return;
+                return target;
+            }, undefined, false);
+            if(!result.committed) throw new Error('تم تعديل الشقة من جهاز آخر. أعد تحميل البيانات قبل الحفظ.');
+            return result;
+        }
         function saveToStorage() {
             sortUnitsData();
             localStorage.setItem('royal_units_cache', JSON.stringify(unitsData));
@@ -2207,7 +2273,7 @@ db.ref('units').once('value', (snapshot) => {
             afterDatasetsDraw(chart) {
                 const { ctx } = chart;
                 ctx.save();
-                ctx.font = 'bold 10px Cairo, sans-serif';
+                ctx.font = `bold ${currentRole === 'viewer' ? 10 : 12}px Cairo, sans-serif`;
                 ctx.fillStyle = '#f8fafc';
                 chart.data.datasets.forEach((dataset, datasetIndex) => {
                     const meta = chart.getDatasetMeta(datasetIndex);
@@ -2238,14 +2304,14 @@ db.ref('units').once('value', (snapshot) => {
             }
             apartmentsChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: { labels, datasets: [{ data: values, backgroundColor: CHART_COLORS, borderRadius: 4, barThickness: 9, maxBarThickness: 11 }] },
+                data: { labels, datasets: [{ data: values, backgroundColor: CHART_COLORS, borderRadius: 4, barThickness: 12, maxBarThickness: 12 }] },
                 options: {
                     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                     layout: { padding: { left: 0, right: 18, top: 0, bottom: 0 } },
                     plugins: { legend: { display: false }, tooltip: { enabled: true } },
                     scales: {
                         x: { beginAtZero: true, grace: '20%', ticks: { display: false, precision: 0 }, grid: { display: false }, border: { display: false } },
-                        y: { ticks: { color: '#cbd5e1', font: { family: 'Cairo', size: 9, weight: 'bold' }, padding: 2 }, grid: { display: false }, border: { display: false } }
+                        y: { ticks: { color: '#cbd5e1', font: { family: 'Cairo', size: 12, weight: 'bold' }, padding: 2 }, grid: { display: false }, border: { display: false } }
                     }
                 },
                 plugins: [countLabelsPlugin]
@@ -2271,14 +2337,14 @@ db.ref('units').once('value', (snapshot) => {
             }
             apartmentsBuildingChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: chartLabels, datasets: [{ data: values, backgroundColor: CHART_COLORS, borderRadius: 4, barThickness: 9, maxBarThickness: 11 }] },
+                data: { labels: chartLabels, datasets: [{ data: values, backgroundColor: CHART_COLORS, borderRadius: 4, barThickness: 12, maxBarThickness: 12 }] },
                 options: {
                     indexAxis: 'y', responsive: true, maintainAspectRatio: false,
                     layout: { padding: { left: 0, right: 18, top: 0, bottom: 0 } },
                     plugins: { legend: { display: false }, tooltip: { enabled: true } },
                     scales: {
                         x: { beginAtZero: true, grace: '20%', ticks: { display: false, precision: 0 }, grid: { display: false }, border: { display: false } },
-                        y: { ticks: { color: '#cbd5e1', font: { family: 'Cairo', size: 9, weight: 'bold' }, padding: 2 }, grid: { display: false }, border: { display: false } }
+                        y: { ticks: { color: '#cbd5e1', font: { family: 'Cairo', size: 12, weight: 'bold' }, padding: 2 }, grid: { display: false }, border: { display: false } }
                     }
                 },
                 plugins: [countLabelsPlugin]
@@ -2480,6 +2546,10 @@ db.ref('units').once('value', (snapshot) => {
                     if (!isContractExpired(item.leaseEnd) || item.isCanceled) return false;
                 } else if (contractFilter === 'canceled') {
                     if (!item.isCanceled && (!item.archiveCanceledTenants || item.archiveCanceledTenants.length === 0)) return false;
+                } else if (contractFilter === 'rented_only') {
+                    if (!String(item.tenant || '').trim() || item.isCanceled) return false;
+                } else if (contractFilter === 'keys_received') {
+                    if (royalKeyTotal(item) < 1) return false;
                 }
 
                 if (qName) {
@@ -2534,6 +2604,45 @@ db.ref('units').once('value', (snapshot) => {
             });
 
             renderData(filtered, { qUnit, qName, qAuth, qPhone, qCar });
+        }
+
+
+        // Highlight every occurrence of active search terms in visible result text,
+        // including dates, key-delivery notes, archived records, and security sequences.
+        // Only text nodes are changed; inputs, buttons and existing markup remain intact.
+        function royalHighlightAllSearchMatches(root, queries = {}) {
+            const terms = [...new Set(Object.values(queries)
+                .map(v => String(v || '').trim())
+                .filter(Boolean))].sort((a, b) => b.length - a.length);
+            if (!root || !terms.length) return;
+            const safeTerms = terms.map(v => v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+            const pattern = new RegExp(safeTerms.join('|'), 'gi');
+            const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+                acceptNode(node) {
+                    if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                    if (node.parentElement?.closest('mark,script,style,button,textarea,select,option,input')) return NodeFilter.FILTER_REJECT;
+                    pattern.lastIndex = 0;
+                    return pattern.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+                }
+            });
+            const nodes = [];
+            while (walker.nextNode()) nodes.push(walker.currentNode);
+            for (const node of nodes) {
+                const value = node.nodeValue;
+                const fragment = document.createDocumentFragment();
+                let start = 0;
+                pattern.lastIndex = 0;
+                for (const match of value.matchAll(pattern)) {
+                    if (match.index > start) fragment.appendChild(document.createTextNode(value.slice(start, match.index)));
+                    const mark = document.createElement('mark');
+                    mark.className = 'highlight';
+                    mark.textContent = match[0];
+                    fragment.appendChild(mark);
+                    start = match.index + match[0].length;
+                }
+                if (start < value.length) fragment.appendChild(document.createTextNode(value.slice(start)));
+                node.replaceWith(fragment);
+            }
         }
 
         function renderSubDetails(residents = [], cars = [], auths = [], queries = {}, unitId = null, authField = null) {
@@ -2628,9 +2737,12 @@ db.ref('units').once('value', (snapshot) => {
             if (currentRole !== 'admin') return;
             const item = unitsData.find(u => Number(u.id) === Number(unitId));
             if (!item) return;
-            item.securitySequence = String(value || '').trim();
-            saveToStorage();
-            filterData();
+            const next = String(value || '').trim();
+            const index = royalUnitIndex(unitId);
+            if (index < 0) return;
+            db.ref('units/'+index+'/securitySequence').set(next).then(() => {
+                item.securitySequence = next; localStorage.setItem('royal_units_cache', JSON.stringify(unitsData)); filterData();
+            }).catch(err => { console.error(err); alert('فشل حفظ التسلسل الأمني في قاعدة البيانات.'); });
         }
 
         function renderData(data, queries = {}) {
@@ -2672,6 +2784,7 @@ db.ref('units').once('value', (snapshot) => {
                         <span class="text-white font-extrabold text-base"><i class="fa-solid fa-user-tie text-blue-400 ml-1"></i>${highlightText(item.owner, queries.qName)} ${item.ownerIsResident ? '<span class="text-xs text-sky-300 font-normal">[مقيم]</span>' : ''}</span>
                         ${ownerPhonesStr ? `<div class="text-amber-400 font-mono text-sm font-bold dir-ltr text-right bg-slate-900/60 px-2.5 py-1 rounded-lg border border-slate-800 w-fit">${highlightText(ownerPhonesStr, queries.qPhone)}</div>` : ''}
                         ${maintenanceInfoHtml}
+                        ${royalKeySummary(item)}
                         ${(canViewRentalFinance() && item.ownerCommission !== undefined && item.ownerCommission !== '') ? `<div class="text-xs text-blue-300 font-bold bg-blue-950/30 border border-blue-500/20 rounded-lg px-2 py-1 w-fit">عمولة المالك: ${esc(displayFinanceAmount(item.ownerCommission))}</div>` : ''}
                         ${ownerDetailsHtml}
                     </div>
@@ -2781,6 +2894,7 @@ db.ref('units').once('value', (snapshot) => {
                 `;
             });
             tbody.innerHTML = rowsHtml;
+            royalHighlightAllSearchMatches(tbody, queries);
             updateGlobalStatistics();
             if (!rentalFinanceTotals || !rentalFinanceTotals.manuallyEdited) rentalFinanceTotals = calculateRentalFinanceTotals();
             renderRentalFinanceTotals();
@@ -2912,6 +3026,7 @@ db.ref('units').once('value', (snapshot) => {
             document.getElementById('addApartment').value = editData ? editData.apartment : '';
             document.getElementById('addOwner').value = editData ? editData.owner : '';
             document.getElementById('addHandoverDate').value = editData ? editData.handoverDate || '' : '';
+            royalRenderKeyRows(editData?.keyDeliveries || []);
             document.getElementById('addOwnerIsResident').checked = editData ? !!editData.ownerIsResident : false;
             document.getElementById('addOwnerPhone1').value = editData && editData.ownerPhones ? editData.ownerPhones[0] || '' : '';
             document.getElementById('addOwnerPhone2').value = editData && editData.ownerPhones ? editData.ownerPhones[1] || '' : '';
@@ -2979,6 +3094,7 @@ db.ref('units').once('value', (snapshot) => {
             }
 
             const unitPayload = {
+                ...(previousUnitForFinance || {}),
                 id: editId ? Number(editId) : Date.now(),
                 building: document.getElementById('addBuilding').value,
                 apartmentType: document.getElementById('addApartmentType').value,
@@ -2986,6 +3102,7 @@ db.ref('units').once('value', (snapshot) => {
                 apartment: document.getElementById('addApartment').value,
                 owner: document.getElementById('addOwner').value,
                 handoverDate: document.getElementById('addHandoverDate').value,
+                keyDeliveries: royalCollectKeyRows(),
                 ownerIsResident: document.getElementById('addOwnerIsResident').checked,
                 ownerPhones: [document.getElementById('addOwnerPhone1').value, document.getElementById('addOwnerPhone2').value, document.getElementById('addOwnerPhone3').value],
                 ownerCommission: document.getElementById('addOwnerCommission').value.replace(/[^0-9]/g, ''),
@@ -3031,11 +3148,26 @@ db.ref('units').once('value', (snapshot) => {
                 unitsData.unshift(unitPayload);
             }
 
-            saveToStorage();
-            syncRentalFinanceTotalsAfterUnitSave(previousFinanceTotals, previousUnitFinanceAmounts, unitPayload);
-            closeModal('formModal');
-            filterData();
-            e.target.reset();
+            if (editId) {
+                const idx = royalUnitIndex(unitPayload.id);
+                const previous = previousUnitForFinance ? {...previousUnitForFinance} : null;
+                db.ref('units/'+idx).transaction(current => {
+                    if (!current) return;
+                    // Merge updated fields, retaining all other server-side fields.
+                    return {...current, ...unitPayload};
+                }, undefined, false).then(result => {
+                    if (!result.committed) throw new Error('تعذر حفظ سجل الشقة');
+                    unitsData[idx] = result.snapshot.val();
+                    localStorage.setItem('royal_units_cache', JSON.stringify(unitsData));
+                    syncRentalFinanceTotalsAfterUnitSave(previousFinanceTotals, previousUnitFinanceAmounts, unitPayload);
+                    closeModal('formModal'); filterData(); e.target.reset();
+                }).catch(err => { if(previous) unitsData[idx]=previous; console.error(err); alert('فشل الحفظ في Firebase؛ لم يتم تأكيد التعديل.'); });
+            } else {
+                // New units use the existing insertion mechanism; do not publish without checking Firebase rules.
+                saveToStorage();
+                syncRentalFinanceTotalsAfterUnitSave(previousFinanceTotals, previousUnitFinanceAmounts, unitPayload);
+                closeModal('formModal'); filterData(); e.target.reset();
+            }
         }
 
         function editUnit(id) {
@@ -3056,6 +3188,7 @@ db.ref('units').once('value', (snapshot) => {
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 space-y-2">
                     <h4 class="font-bold text-blue-400 text-base">مالك الوحدة: ${esc(item.owner)}</h4>
                     <p class="text-xs text-slate-300">الهواتف: ${esc((item.ownerPhones || []).filter(Boolean).join(' - ')) || 'لا توجد'}</p>
+                    ${royalKeySummary(item)}
                     ${canViewRentalFinance() ? `<p class="text-sm text-blue-300 font-bold">عمولة المالك: ${esc(displayFinanceAmount(item.ownerCommission))}</p>` : ''}
                 </div>
                 <div class="bg-slate-800/40 p-4 rounded-xl border border-slate-700/60 space-y-2">
